@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockAnalytics } from '@/lib/chatbot';
+import { mockAnalytics } from '../../../../lib/chatbot';
 
 export async function GET(request: NextRequest) {
   try {

@@ -40,6 +40,12 @@ import {
   Share,
   Archive,
   RefreshCw,
+  Tag,
+  Shield,
+  AlertTriangle,
+  Phone,
+  Building,
+  Target,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -72,245 +78,213 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DataTable } from "@/components/ui/data-table";
-
-export type Event = {
-  id: string;
-  title: string;
-  description: string;
-  eventType:
-    | "rally"
-    | "meeting"
-    | "conference"
-    | "workshop"
-    | "fundraiser"
-    | "other";
-  category: "public" | "private" | "invitation_only" | "media_event";
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
-  timezone: string;
-  venue: string;
-  address: string;
-  city: string;
-  district: string;
-  region: string;
-  maxAttendees: number;
-  expectedAttendees: number;
-  registeredAttendees: number;
-  budget?: number;
-  estimatedCost?: number;
-  status:
-    | "draft"
-    | "scheduled"
-    | "ongoing"
-    | "completed"
-    | "cancelled"
-    | "postponed";
-  organizerName: string;
-  organizerPhone: string;
-  organizerEmail: string;
-  mediaCoverage: boolean;
-  liveStreaming: boolean;
-  recordingAllowed: boolean;
-  socialMediaPromotion: boolean;
-  pressRelease: boolean;
-  securityRequired: boolean;
-  medicalSupport: boolean;
-  createdAt: string;
-  updatedAt: string;
-};
+import { type Event, type EventTableData } from "@/types/event";
 
 const mockEvents: Event[] = [
   {
-    id: "EVT001",
+    id: 1,
     title: "Presidential Campaign Rally",
+    type: "rally",
+    category: "Political Rally",
+    timezone: "Africa/Mogadishu",
     description:
       "Major campaign rally in Hargeisa with keynote speeches and supporter engagement",
-    eventType: "rally",
-    category: "public",
-    startDate: "2024-02-15",
-    endDate: "2024-02-15",
-    startTime: "14:00",
-    endTime: "18:00",
-    timezone: "Africa/Mogadishu",
+    objective: "Mobilize supporters and communicate campaign platform",
+    tags: ["campaign", "rally", "hargeisa"],
+    priority: "high",
+    start_time: "2024-02-15T14:00:00Z",
+    end_time: "2024-02-15T18:00:00Z",
+    recurrence: "none",
+    setup_time: "2024-02-15T12:00:00Z",
+    teardown_time: "2024-02-15T20:00:00Z",
     venue: "Hargeisa Stadium",
-    address: "Hargeisa Stadium, Hargeisa, Somaliland",
     city: "Hargeisa",
-    district: "Hargeisa Central",
-    region: "Maroodi Jeex",
-    maxAttendees: 5000,
-    expectedAttendees: 3500,
-    registeredAttendees: 2800,
-    budget: 15000,
-    estimatedCost: 12000,
+    district_id: 1,
+    region_id: 1,
+    address: "Hargeisa Stadium, Hargeisa, Somaliland",
+    lat: 9.5616,
+    lng: 44.065,
+    max_capacity: 5000,
+    expected_attendance: 3500,
+    actual_attendance: 2800,
+    budget_amount: 15000,
+    estimated_cost: 12000,
+    funding_source_id: 1,
     status: "scheduled",
-    organizerName: "Ahmed Hassan",
-    organizerPhone: "+252 61 234 5678",
-    organizerEmail: "ahmed.hassan@campaign.com",
-    mediaCoverage: true,
-    liveStreaming: true,
-    recordingAllowed: true,
-    socialMediaPromotion: true,
-    pressRelease: true,
-    securityRequired: true,
-    medicalSupport: true,
-    createdAt: "2024-01-20",
-    updatedAt: "2024-01-20",
+    media_links: [
+      "https://youtube.com/live/rally",
+      "https://facebook.com/events/rally",
+    ],
+    organizer_name: "Ahmed Hassan",
+    organizer_contact: "+252 61 234 5678",
+    backup_contact: "+252 61 234 5679",
+    assigned_operator_id: 1,
+    risk_assessment: "High security risk due to large crowd",
+    contingency_plan: "Emergency medical team on standby, security backup plan",
+    feedback_link: "https://forms.gle/rally-feedback",
+    created_by: 1,
+    updated_by: 1,
+    created_at: "2024-01-20T10:00:00Z",
+    updated_at: "2024-01-20T10:00:00Z",
   },
   {
-    id: "EVT002",
+    id: 2,
     title: "Youth Engagement Workshop",
+    type: "training",
+    category: "Youth Development",
+    timezone: "Africa/Mogadishu",
     description:
       "Interactive workshop focusing on youth participation in politics",
-    eventType: "workshop",
-    category: "invitation_only",
-    startDate: "2024-02-10",
-    endDate: "2024-02-10",
-    startTime: "09:00",
-    endTime: "16:00",
-    timezone: "Africa/Mogadishu",
+    objective: "Educate young people about political participation",
+    tags: ["youth", "training", "education"],
+    priority: "medium",
+    start_time: "2024-02-10T09:00:00Z",
+    end_time: "2024-02-10T16:00:00Z",
+    recurrence: "none",
     venue: "Hargeisa University",
+    city: "Hargeisa",
+    district_id: 2,
+    region_id: 1,
     address: "Hargeisa University, Hargeisa, Somaliland",
-    city: "Hargeisa",
-    district: "Hargeisa North",
-    region: "Maroodi Jeex",
-    maxAttendees: 200,
-    expectedAttendees: 150,
-    registeredAttendees: 120,
-    budget: 5000,
-    estimatedCost: 4500,
+    lat: 9.57,
+    lng: 44.07,
+    max_capacity: 200,
+    expected_attendance: 150,
+    actual_attendance: 120,
+    budget_amount: 5000,
+    estimated_cost: 4500,
     status: "completed",
-    organizerName: "Fatima Ali",
-    organizerPhone: "+252 61 234 5679",
-    organizerEmail: "fatima.ali@campaign.com",
-    mediaCoverage: false,
-    liveStreaming: false,
-    recordingAllowed: false,
-    socialMediaPromotion: true,
-    pressRelease: false,
-    securityRequired: false,
-    medicalSupport: false,
-    createdAt: "2024-01-15",
-    updatedAt: "2024-02-10",
+    media_links: [],
+    organizer_name: "Fatima Ali",
+    organizer_contact: "+252 61 234 5679",
+    created_by: 1,
+    updated_by: 1,
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-02-10T16:00:00Z",
   },
   {
-    id: "EVT003",
+    id: 3,
     title: "Fundraising Gala Dinner",
-    description: "Elegant fundraising event for campaign supporters and donors",
-    eventType: "fundraiser",
-    category: "private",
-    startDate: "2024-02-20",
-    endDate: "2024-02-20",
-    startTime: "19:00",
-    endTime: "23:00",
+    type: "fundraiser",
+    category: "Fundraising",
     timezone: "Africa/Mogadishu",
+    description: "Elegant fundraising event for campaign supporters and donors",
+    objective: "Raise funds for campaign activities",
+    tags: ["fundraising", "dinner", "donors"],
+    priority: "high",
+    start_time: "2024-02-20T19:00:00Z",
+    end_time: "2024-02-20T23:00:00Z",
+    recurrence: "none",
     venue: "Hargeisa Hotel",
-    address: "Hargeisa Hotel, Hargeisa, Somaliland",
     city: "Hargeisa",
-    district: "Hargeisa Central",
-    region: "Maroodi Jeex",
-    maxAttendees: 300,
-    expectedAttendees: 250,
-    registeredAttendees: 200,
-    budget: 25000,
-    estimatedCost: 20000,
+    district_id: 1,
+    region_id: 1,
+    address: "Hargeisa Hotel, Hargeisa, Somaliland",
+    lat: 9.56,
+    lng: 44.06,
+    max_capacity: 300,
+    expected_attendance: 250,
+    actual_attendance: 200,
+    budget_amount: 25000,
+    estimated_cost: 20000,
+    funding_source_id: 2,
     status: "scheduled",
-    organizerName: "Omar Mohamed",
-    organizerPhone: "+252 61 234 5680",
-    organizerEmail: "omar.mohamed@campaign.com",
-    mediaCoverage: true,
-    liveStreaming: false,
-    recordingAllowed: false,
-    socialMediaPromotion: false,
-    pressRelease: true,
-    securityRequired: true,
-    medicalSupport: false,
-    createdAt: "2024-01-18",
-    updatedAt: "2024-01-18",
+    media_links: [],
+    organizer_name: "Omar Mohamed",
+    organizer_contact: "+252 61 234 5680",
+    backup_contact: "+252 61 234 5681",
+    assigned_operator_id: 2,
+    risk_assessment: "Low risk event in controlled environment",
+    contingency_plan: "Backup venue available if needed",
+    feedback_link: "https://forms.gle/gala-feedback",
+    created_by: 1,
+    updated_by: 1,
+    created_at: "2024-01-18T10:00:00Z",
+    updated_at: "2024-01-18T10:00:00Z",
   },
   {
-    id: "EVT004",
+    id: 4,
     title: "Community Meeting - Berbera",
+    type: "meeting",
+    category: "Community Engagement",
+    timezone: "Africa/Mogadishu",
     description:
       "Community engagement meeting to discuss local issues and campaign promises",
-    eventType: "meeting",
-    category: "public",
-    startDate: "2024-02-05",
-    endDate: "2024-02-05",
-    startTime: "16:00",
-    endTime: "19:00",
-    timezone: "Africa/Mogadishu",
+    objective: "Engage with local community and address concerns",
+    tags: ["community", "meeting", "berbera"],
+    priority: "medium",
+    start_time: "2024-02-05T16:00:00Z",
+    end_time: "2024-02-05T19:00:00Z",
+    recurrence: "none",
     venue: "Berbera Community Center",
-    address: "Berbera Community Center, Berbera, Somaliland",
     city: "Berbera",
-    district: "Berbera",
-    region: "Sahil",
-    maxAttendees: 500,
-    expectedAttendees: 300,
-    registeredAttendees: 250,
-    budget: 3000,
-    estimatedCost: 2500,
-    status: "ongoing",
-    organizerName: "Aisha Ahmed",
-    organizerPhone: "+252 61 234 5681",
-    organizerEmail: "aisha.ahmed@campaign.com",
-    mediaCoverage: false,
-    liveStreaming: false,
-    recordingAllowed: true,
-    socialMediaPromotion: true,
-    pressRelease: false,
-    securityRequired: false,
-    medicalSupport: false,
-    createdAt: "2024-01-12",
-    updatedAt: "2024-02-05",
+    district_id: 6,
+    region_id: 6,
+    address: "Berbera Community Center, Berbera, Somaliland",
+    lat: 10.4333,
+    lng: 45.0167,
+    max_capacity: 500,
+    expected_attendance: 300,
+    actual_attendance: 250,
+    budget_amount: 3000,
+    estimated_cost: 2500,
+    status: "in_progress",
+    media_links: [],
+    organizer_name: "Aisha Ahmed",
+    organizer_contact: "+252 61 234 5681",
+    created_by: 1,
+    updated_by: 1,
+    created_at: "2024-01-12T10:00:00Z",
+    updated_at: "2024-02-05T16:00:00Z",
   },
   {
-    id: "EVT005",
+    id: 5,
     title: "Media Conference",
-    description: "Press conference to announce new campaign initiatives",
-    eventType: "conference",
-    category: "media_event",
-    startDate: "2024-02-08",
-    endDate: "2024-02-08",
-    startTime: "10:00",
-    endTime: "12:00",
+    type: "meeting",
+    category: "Media Event",
     timezone: "Africa/Mogadishu",
+    description: "Press conference to announce new campaign initiatives",
+    objective: "Communicate new policies to media and public",
+    tags: ["media", "press", "announcement"],
+    priority: "high",
+    start_time: "2024-02-08T10:00:00Z",
+    end_time: "2024-02-08T12:00:00Z",
+    recurrence: "none",
     venue: "Campaign Headquarters",
-    address: "Campaign Headquarters, Hargeisa, Somaliland",
     city: "Hargeisa",
-    district: "Hargeisa Central",
-    region: "Maroodi Jeex",
-    maxAttendees: 100,
-    expectedAttendees: 50,
-    registeredAttendees: 45,
-    budget: 2000,
-    estimatedCost: 1500,
+    district_id: 1,
+    region_id: 1,
+    address: "Campaign Headquarters, Hargeisa, Somaliland",
+    lat: 9.55,
+    lng: 44.05,
+    max_capacity: 100,
+    expected_attendance: 50,
+    actual_attendance: 45,
+    budget_amount: 2000,
+    estimated_cost: 1500,
     status: "cancelled",
-    organizerName: "Hassan Ibrahim",
-    organizerPhone: "+252 61 234 5682",
-    organizerEmail: "hassan.ibrahim@campaign.com",
-    mediaCoverage: true,
-    liveStreaming: true,
-    recordingAllowed: true,
-    socialMediaPromotion: true,
-    pressRelease: true,
-    securityRequired: false,
-    medicalSupport: false,
-    createdAt: "2024-01-25",
-    updatedAt: "2024-02-07",
+    media_links: ["https://youtube.com/live/press-conference"],
+    organizer_name: "Hassan Ibrahim",
+    organizer_contact: "+252 61 234 5682",
+    backup_contact: "+252 61 234 5683",
+    assigned_operator_id: 3,
+    risk_assessment: "Low risk indoor event",
+    contingency_plan: "Virtual conference backup available",
+    feedback_link: "https://forms.gle/press-feedback",
+    created_by: 1,
+    updated_by: 1,
+    created_at: "2024-01-25T10:00:00Z",
+    updated_at: "2024-02-07T10:00:00Z",
   },
 ];
 
-const getEventTypeColor = (eventType: Event["eventType"]) => {
+const getEventTypeColor = (eventType: Event["type"]) => {
   switch (eventType) {
     case "rally":
       return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
     case "meeting":
       return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
-    case "conference":
-      return "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400";
-    case "workshop":
+    case "training":
       return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
     case "fundraiser":
       return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
@@ -323,18 +297,29 @@ const getEventTypeColor = (eventType: Event["eventType"]) => {
 
 const getStatusColor = (status: Event["status"]) => {
   switch (status) {
+    case "planned":
+      return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400";
     case "scheduled":
       return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
-    case "ongoing":
+    case "in_progress":
       return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
     case "completed":
       return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
     case "cancelled":
       return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
-    case "postponed":
+    default:
+      return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+  }
+};
+
+const getPriorityColor = (priority: Event["priority"]) => {
+  switch (priority) {
+    case "low":
+      return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+    case "medium":
       return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
-    case "draft":
-      return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400";
+    case "high":
+      return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
     default:
       return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
   }
@@ -342,33 +327,29 @@ const getStatusColor = (status: Event["status"]) => {
 
 const getStatusIcon = (status: Event["status"]) => {
   switch (status) {
+    case "planned":
+      return <Edit className="h-4 w-4 text-orange-600" />;
     case "scheduled":
       return <Clock className="h-4 w-4 text-blue-600" />;
-    case "ongoing":
+    case "in_progress":
       return <CheckCircle className="h-4 w-4 text-green-600" />;
     case "completed":
       return <CheckCircle className="h-4 w-4 text-gray-600" />;
     case "cancelled":
       return <X className="h-4 w-4 text-red-600" />;
-    case "postponed":
-      return <Clock className="h-4 w-4 text-yellow-600" />;
-    case "draft":
-      return <Edit className="h-4 w-4 text-orange-600" />;
     default:
       return <AlertCircle className="h-4 w-4 text-gray-600" />;
   }
 };
 
-const getEventTypeIcon = (eventType: Event["eventType"]) => {
+const getEventTypeIcon = (eventType: Event["type"]) => {
   switch (eventType) {
     case "rally":
       return <Mic className="h-4 w-4 text-red-600" />;
     case "meeting":
       return <Users className="h-4 w-4 text-blue-600" />;
-    case "conference":
-      return <Video className="h-4 w-4 text-purple-600" />;
-    case "workshop":
-      return <Edit className="h-4 w-4 text-green-600" />;
+    case "training":
+      return <Target className="h-4 w-4 text-green-600" />;
     case "fundraiser":
       return <DollarSign className="h-4 w-4 text-yellow-600" />;
     case "other":
@@ -378,7 +359,24 @@ const getEventTypeIcon = (eventType: Event["eventType"]) => {
   }
 };
 
-export const columns: ColumnDef<Event>[] = [
+const getPriorityIcon = (priority: Event["priority"]) => {
+  switch (priority) {
+    case "low":
+      return <AlertCircle className="h-4 w-4 text-gray-600" />;
+    case "medium":
+      return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
+    case "high":
+      return <Shield className="h-4 w-4 text-red-600" />;
+    default:
+      return <AlertCircle className="h-4 w-4 text-gray-600" />;
+  }
+};
+
+const createColumns = (
+  onViewEvent?: (event: Event) => void,
+  onEditEvent?: (event: Event) => void,
+  onDeleteEvent?: (event: Event) => void
+): ColumnDef<Event>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -425,16 +423,16 @@ export const columns: ColumnDef<Event>[] = [
           <div className="font-medium max-w-[200px] truncate">
             {event.title}
           </div>
-          <div className="text-sm text-muted-foreground">{event.id}</div>
+          <div className="text-sm text-muted-foreground">ID: {event.id}</div>
         </div>
       );
     },
   },
   {
-    accessorKey: "eventType",
+    accessorKey: "type",
     header: "Type",
     cell: ({ row }) => {
-      const eventType = row.getValue("eventType") as Event["eventType"];
+      const eventType = row.getValue("type") as Event["type"];
       return (
         <div className="flex items-center space-x-2">
           {getEventTypeIcon(eventType)}
@@ -449,14 +447,27 @@ export const columns: ColumnDef<Event>[] = [
     },
   },
   {
-    accessorKey: "category",
-    header: "Category",
+    accessorKey: "priority",
+    header: "Priority",
     cell: ({ row }) => {
-      const category = row.getValue("category") as Event["category"];
+      const priority = row.getValue("priority") as Event["priority"];
+      if (!priority) {
+        return (
+          <div className="flex items-center space-x-2">
+            <AlertCircle className="h-4 w-4 text-gray-600" />
+            <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400">
+              Not Set
+            </Badge>
+          </div>
+        );
+      }
       return (
-        <Badge variant="outline">
-          {category.replace("_", " ").toUpperCase()}
-        </Badge>
+        <div className="flex items-center space-x-2">
+          {getPriorityIcon(priority)}
+          <Badge className={getPriorityColor(priority)}>
+            {priority.charAt(0).toUpperCase() + priority.slice(1)}
+          </Badge>
+        </div>
       );
     },
     filterFn: (row, id, value) => {
@@ -464,7 +475,7 @@ export const columns: ColumnDef<Event>[] = [
     },
   },
   {
-    accessorKey: "dateTime",
+    accessorKey: "start_time",
     header: ({ column }) => {
       return (
         <Button
@@ -479,7 +490,8 @@ export const columns: ColumnDef<Event>[] = [
     },
     cell: ({ row }) => {
       const event = row.original;
-      const startDate = new Date(`${event.startDate}T${event.startTime}`);
+      const startDate = new Date(event.start_time);
+      const endDate = new Date(event.end_time);
       return (
         <div className="space-y-1">
           <div className="flex items-center space-x-1 text-sm">
@@ -487,14 +499,22 @@ export const columns: ColumnDef<Event>[] = [
             <span>{startDate.toLocaleDateString()}</span>
           </div>
           <div className="text-sm text-muted-foreground">
-            {event.startTime} - {event.endTime}
+            {startDate.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}{" "}
+            -{" "}
+            {endDate.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </div>
         </div>
       );
     },
   },
   {
-    accessorKey: "location",
+    accessorKey: "venue",
     header: "Location",
     cell: ({ row }) => {
       const event = row.original;
@@ -504,9 +524,7 @@ export const columns: ColumnDef<Event>[] = [
             <MapPin className="h-3 w-3 text-muted-foreground" />
             <span className="max-w-[150px] truncate">{event.venue}</span>
           </div>
-          <div className="text-sm text-muted-foreground">
-            {event.district}, {event.region}
-          </div>
+          <div className="text-sm text-muted-foreground">{event.city}</div>
         </div>
       );
     },
@@ -516,15 +534,17 @@ export const columns: ColumnDef<Event>[] = [
     header: "Attendance",
     cell: ({ row }) => {
       const event = row.original;
-      const attendanceRate =
-        (event.registeredAttendees / event.maxAttendees) * 100;
+      const actual = event.actual_attendance || 0;
+      const expected = event.expected_attendance || 0;
+      const max = event.max_capacity;
+      const attendanceRate = expected > 0 ? (actual / expected) * 100 : 0;
       return (
         <div className="space-y-1">
           <div className="text-sm font-medium">
-            {event.registeredAttendees}/{event.maxAttendees}
+            {actual}/{max}
           </div>
           <div className="text-sm text-muted-foreground">
-            {attendanceRate.toFixed(1)}% registered
+            {attendanceRate.toFixed(1)}% of expected
           </div>
         </div>
       );
@@ -550,7 +570,8 @@ export const columns: ColumnDef<Event>[] = [
         <div className="flex items-center space-x-2">
           {getStatusIcon(status)}
           <Badge className={getStatusColor(status)}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {status.replace("_", " ").charAt(0).toUpperCase() +
+              status.replace("_", " ").slice(1)}
           </Badge>
         </div>
       );
@@ -560,56 +581,33 @@ export const columns: ColumnDef<Event>[] = [
     },
   },
   {
-    accessorKey: "budget",
+    accessorKey: "budget_amount",
     header: "Budget",
     cell: ({ row }) => {
-      const budget = row.getValue("budget") as number | undefined;
-      return budget ? (
-        <div className="text-sm font-medium">${budget.toLocaleString()}</div>
-      ) : (
-        <span className="text-muted-foreground">Not set</span>
-      );
-    },
-  },
-  {
-    accessorKey: "media",
-    header: "Media",
-    cell: ({ row }) => {
-      const event = row.original;
-      const mediaFeatures = [
-        event.mediaCoverage && "Coverage",
-        event.liveStreaming && "Live",
-        event.recordingAllowed && "Recording",
-        event.socialMediaPromotion && "Social",
-        event.pressRelease && "Press",
-      ].filter((feature): feature is string => Boolean(feature));
-
+      const budget = row.getValue("budget_amount") as number;
+      const estimated = row.original.estimated_cost;
       return (
-        <div className="flex flex-wrap gap-1">
-          {mediaFeatures.slice(0, 2).map((feature) => (
-            <Badge key={feature} variant="outline" className="text-xs">
-              {feature}
-            </Badge>
-          ))}
-          {mediaFeatures.length > 2 && (
-            <Badge variant="outline" className="text-xs">
-              +{mediaFeatures.length - 2}
-            </Badge>
+        <div className="space-y-1">
+          <div className="text-sm font-medium">${budget.toLocaleString()}</div>
+          {estimated && (
+            <div className="text-sm text-muted-foreground">
+              Est: ${estimated.toLocaleString()}
+            </div>
           )}
         </div>
       );
     },
   },
   {
-    accessorKey: "organizer",
+    accessorKey: "organizer_name",
     header: "Organizer",
     cell: ({ row }) => {
       const event = row.original;
       return (
         <div className="space-y-1">
-          <div className="text-sm font-medium">{event.organizerName}</div>
+          <div className="text-sm font-medium">{event.organizer_name}</div>
           <div className="text-sm text-muted-foreground">
-            {event.organizerPhone}
+            {event.organizer_contact}
           </div>
         </div>
       );
@@ -632,25 +630,30 @@ export const columns: ColumnDef<Event>[] = [
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>Event Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(event.id)}
+              onClick={() => navigator.clipboard.writeText(event.id.toString())}
             >
               <Copy className="mr-2 h-4 w-4" />
               Copy event ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onViewEvent?.(event)}>
               <Eye className="mr-2 h-4 w-4" />
               View full details
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onEditEvent?.(event)}>
               <Edit className="mr-2 h-4 w-4" />
               Edit event
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <ExternalLink className="mr-2 h-4 w-4" />
-              View event page
-            </DropdownMenuItem>
+            {event.media_links && event.media_links.length > 0 && (
+              <>
+                <DropdownMenuItem>
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  View media links
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
             <DropdownMenuItem>
               <Share className="mr-2 h-4 w-4" />
               Share event
@@ -670,7 +673,10 @@ export const columns: ColumnDef<Event>[] = [
               Archive event
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={() => onDeleteEvent?.(event)}
+            >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete event
             </DropdownMenuItem>
@@ -681,27 +687,44 @@ export const columns: ColumnDef<Event>[] = [
   },
 ];
 
+export { createColumns };
+
 interface EventsDataTableProps {
   data?: Event[];
+  onCreateEvent?: () => void;
+  onEditEvent?: (event: Event) => void;
+  onDeleteEvent?: (event: Event) => void;
+  onViewEvent?: (event: Event) => void;
 }
 
-export function EventsDataTable({ data = mockEvents }: EventsDataTableProps) {
-  const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
+export function EventsDataTable({
+  data = mockEvents,
+  onCreateEvent,
+  onEditEvent,
+  onDeleteEvent,
+  onViewEvent,
+}: EventsDataTableProps) {
+  const [selectedRows, setSelectedRows] = React.useState<number[]>([]);
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
   const [typeFilter, setTypeFilter] = React.useState<string>("all");
-  const [categoryFilter, setCategoryFilter] = React.useState<string>("all");
+  const [priorityFilter, setPriorityFilter] = React.useState<string>("all");
+
+  const columns = React.useMemo(
+    () => createColumns(onViewEvent, onEditEvent, onDeleteEvent),
+    [onViewEvent, onEditEvent, onDeleteEvent]
+  );
 
   const filteredData = React.useMemo(() => {
     return data.filter((event) => {
       const statusMatch =
         statusFilter === "all" || event.status === statusFilter;
-      const typeMatch = typeFilter === "all" || event.eventType === typeFilter;
-      const categoryMatch =
-        categoryFilter === "all" || event.category === categoryFilter;
+      const typeMatch = typeFilter === "all" || event.type === typeFilter;
+      const priorityMatch =
+        priorityFilter === "all" || event.priority === priorityFilter;
 
-      return statusMatch && typeMatch && categoryMatch;
+      return statusMatch && typeMatch && priorityMatch;
     });
-  }, [data, statusFilter, typeFilter, categoryFilter]);
+  }, [data, statusFilter, typeFilter, priorityFilter]);
 
   const handleBulkAction = (action: string) => {
     console.log(`Bulk action: ${action} on ${selectedRows.length} events`);
@@ -709,15 +732,41 @@ export function EventsDataTable({ data = mockEvents }: EventsDataTableProps) {
   };
 
   const getUniqueTypes = () => {
-    return Array.from(new Set(data.map((e) => e.eventType))).sort();
+    return Array.from(new Set(data.map((e) => e.type))).sort();
   };
 
-  const getUniqueCategories = () => {
-    return Array.from(new Set(data.map((e) => e.category))).sort();
+  const getUniqueStatuses = () => {
+    return Array.from(new Set(data.map((e) => e.status))).sort();
+  };
+
+  const getUniquePriorities = () => {
+    return Array.from(
+      new Set(
+        data
+          .map((e) => e.priority)
+          .filter((p): p is NonNullable<typeof p> => Boolean(p))
+      )
+    ).sort();
   };
 
   return (
     <div className="w-full space-y-4">
+      {/* Header with Create Button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Events</h2>
+          <p className="text-muted-foreground">
+            Manage and track all campaign events
+          </p>
+        </div>
+        {onCreateEvent && (
+          <Button onClick={onCreateEvent}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Event
+          </Button>
+        )}
+      </div>
+
       {/* Advanced Filters */}
       <Card>
         <CardHeader>
@@ -736,12 +785,11 @@ export function EventsDataTable({ data = mockEvents }: EventsDataTableProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="planned">Planned</SelectItem>
                   <SelectItem value="scheduled">Scheduled</SelectItem>
-                  <SelectItem value="ongoing">Ongoing</SelectItem>
+                  <SelectItem value="in_progress">In Progress</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
                   <SelectItem value="cancelled">Cancelled</SelectItem>
-                  <SelectItem value="postponed">Postponed</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -764,16 +812,16 @@ export function EventsDataTable({ data = mockEvents }: EventsDataTableProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category-filter">Category</Label>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <Label htmlFor="priority-filter">Priority</Label>
+              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Categories" />
+                  <SelectValue placeholder="All Priorities" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {getUniqueCategories().map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category.replace("_", " ").toUpperCase()}
+                  <SelectItem value="all">All Priorities</SelectItem>
+                  {getUniquePriorities().map((priority) => (
+                    <SelectItem key={priority} value={priority}>
+                      {priority.charAt(0).toUpperCase() + priority.slice(1)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -789,7 +837,7 @@ export function EventsDataTable({ data = mockEvents }: EventsDataTableProps) {
                   onClick={() => {
                     setStatusFilter("all");
                     setTypeFilter("all");
-                    setCategoryFilter("all");
+                    setPriorityFilter("all");
                   }}
                 >
                   <RotateCcw className="h-4 w-4 mr-2" />
@@ -834,10 +882,10 @@ export function EventsDataTable({ data = mockEvents }: EventsDataTableProps) {
                     <DropdownMenuLabel>Bulk Actions</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={() => handleBulkAction("publish")}
+                      onClick={() => handleBulkAction("schedule")}
                     >
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                      Publish Selected
+                      <Clock className="mr-2 h-4 w-4" />
+                      Schedule Selected
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => handleBulkAction("cancel")}
@@ -846,10 +894,10 @@ export function EventsDataTable({ data = mockEvents }: EventsDataTableProps) {
                       Cancel Selected
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => handleBulkAction("postpone")}
+                      onClick={() => handleBulkAction("complete")}
                     >
-                      <Clock className="mr-2 h-4 w-4" />
-                      Postpone Selected
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Mark as Complete
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem

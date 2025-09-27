@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { OperatorFormData } from '@/types/operator';
+import { OperatorFormData } from '../../types/operator';
 
 // Phone validation schema
 const phoneSchema = z.object({

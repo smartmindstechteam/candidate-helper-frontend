@@ -10,7 +10,7 @@ import {
   generateBotResponse, 
   classifyMessage,
   validateMessage 
-} from '@/lib/chatbot';
+} from '../lib/chatbot';
 
 interface UseChatbotOptions {
   userId: string;

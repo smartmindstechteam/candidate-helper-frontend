@@ -1,4 +1,5 @@
 // Operator Module Types based on the database design
+import { Fund } from '../lib/funds-api';
 
 export interface OperatorPhone {
   id: number;
@@ -60,17 +61,7 @@ export interface ActivityLog {
   created_at: string;
 }
 
-export interface Fund {
-  id: number;
-  operator_id: number;
-  amount: number;
-  category: string;
-  source: string;
-  description?: string;
-  transaction_date: string;
-  created_at: string;
-  updated_at: string;
-}
+// Fund interface moved to funds-api.ts for consistency
 
 export interface Operator {
   id: number;
@@ -103,6 +94,16 @@ export interface Operator {
   activity_logs?: ActivityLog[];
   funds?: Fund[];
   allowed_actions?: string[];
+  
+  // Additional fields for data table display
+  full_name?: string;
+  age?: number;
+  location_name?: string;
+  last_activity?: string;
+  task_count?: number;
+  supporter_count?: number;
+  event_count?: number;
+  total_funds?: number;
 }
 
 // Form-specific types

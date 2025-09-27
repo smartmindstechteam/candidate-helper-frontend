@@ -189,6 +189,7 @@ export interface SupporterCreateRequest {
 
 export interface SupporterUpdateRequest extends Partial<SupporterCreateRequest> {
   id: number;
+  status?: 'pending' | 'approved' | 'rejected';
 }
 
 export interface SupporterResponse extends Supporter {

@@ -33,6 +33,8 @@ import {
   Route,
 } from "lucide-react";
 import { BusDashboard } from "@/components/bus/bus-dashboard";
+import { BusDataTable } from "@/components/bus/bus-data-table";
+import { DriverDataTable } from "@/components/bus/driver-data-table";
 import { BusRegistrationForm } from "@/components/forms/bus-registration-form";
 import { BusRoutingForm } from "@/components/forms/bus-routing-form";
 import {
@@ -131,103 +133,29 @@ export default function BusesPage() {
         </TabsContent>
 
         <TabsContent value="buses" className="space-y-4">
-          {/* Filters */}
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex-1">
-                  <Input
-                    placeholder="Search buses..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="max-w-sm"
-                  />
-                </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="maintenance">Maintenance</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Buses List */}
           <Card>
             <CardHeader>
-              <CardTitle>
-                Fleet Overview ({filteredBuses.length} buses)
-              </CardTitle>
+              <CardTitle>Fleet Management</CardTitle>
+              <p className="text-muted-foreground">
+                Manage your bus fleet with detailed information and controls
+              </p>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {filteredBuses.map((bus) => {
-                  const maintenanceStatus = getMaintenanceStatus(bus);
-                  const driver = mockDrivers.find((d) => d.id === bus.driverId);
-                  const route = mockRoutes.find((r) => r.id === bus.routeId);
-
-                  return (
-                    <div
-                      key={bus.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <Bus className="h-8 w-8 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">{bus.plateNumber}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {bus.model} • {bus.capacity} seats
-                          </p>
-                          {driver && (
-                            <p className="text-sm text-muted-foreground">
-                              Driver: {driver.name}
-                            </p>
-                          )}
-                          {route && (
-                            <p className="text-sm text-muted-foreground">
-                              Route: {route.name}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <div className="text-right">
-                          <Badge className={getBusStatusColor(bus.status)}>
-                            {bus.status}
-                          </Badge>
-                          <div className="mt-1">
-                            <Badge
-                              variant="outline"
-                              className={getMaintenanceStatusColor(
-                                maintenanceStatus
-                              )}
-                            >
-                              {maintenanceStatus}
-                            </Badge>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <BusDataTable
+                data={mockBuses}
+                onView={(bus) => {
+                  console.log("View bus:", bus);
+                  // TODO: Implement view functionality
+                }}
+                onEdit={(bus) => {
+                  console.log("Edit bus:", bus);
+                  // TODO: Implement edit functionality
+                }}
+                onDelete={(bus) => {
+                  console.log("Delete bus:", bus);
+                  // TODO: Implement delete functionality
+                }}
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -313,52 +241,31 @@ export default function BusesPage() {
         <TabsContent value="drivers" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>
-                Driver Management ({filteredDrivers.length} drivers)
-              </CardTitle>
+              <CardTitle>Driver Management</CardTitle>
+              <p className="text-muted-foreground">
+                Manage bus drivers and their assignments
+              </p>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {filteredDrivers.map((driver) => (
-                  <div
-                    key={driver.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <Users className="h-8 w-8 text-muted-foreground" />
-                      <div>
-                        <p className="font-medium">{driver.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {driver.licenseNumber} • {driver.phone}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {driver.experience} years experience • Rating:{" "}
-                          {driver.rating}/5
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
-                        <p className="text-sm font-medium">{driver.email}</p>
-                      </div>
-                      <Badge className={getDriverStatusColor(driver.status)}>
-                        {driver.status}
-                      </Badge>
-                      <div className="flex items-center space-x-1">
-                        <Button variant="ghost" size="sm">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <DriverDataTable
+                data={mockDrivers}
+                onView={(driver) => {
+                  console.log("View driver:", driver);
+                  // TODO: Implement view functionality
+                }}
+                onEdit={(driver) => {
+                  console.log("Edit driver:", driver);
+                  // TODO: Implement edit functionality
+                }}
+                onDelete={(driver) => {
+                  console.log("Delete driver:", driver);
+                  // TODO: Implement delete functionality
+                }}
+                onAssignBus={(driver) => {
+                  console.log("Assign bus to driver:", driver);
+                  // TODO: Implement bus assignment functionality
+                }}
+              />
             </CardContent>
           </Card>
         </TabsContent>

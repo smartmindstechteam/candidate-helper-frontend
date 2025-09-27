@@ -1,13 +1,28 @@
 export interface Bus {
   id: string;
+  busNumber: string;
   plateNumber: string;
   model: string;
+  manufacturer: string;
+  year: number;
+  color: string;
   capacity: number;
-  status: 'active' | 'maintenance' | 'inactive';
+  busType: 'standard' | 'deluxe' | 'minibus' | 'coach';
+  fuelType: 'diesel' | 'petrol' | 'electric' | 'hybrid';
+  status: 'active' | 'maintenance' | 'inactive' | 'retired';
   driverId?: string;
   routeId?: string;
   lastMaintenance: Date;
   nextMaintenance: Date;
+  insuranceExpiry: Date;
+  inspectionDate: Date;
+  isGpsEnabled: boolean;
+  hasWifi: boolean;
+  hasAirConditioning: boolean;
+  isAccessible: boolean;
+  notes?: string;
+  emergencyContact?: string;
+  emergencyPhone?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -46,6 +61,9 @@ export interface Schedule {
   departureTime: string; // HH:MM format
   arrivalTime: string; // HH:MM format
   dayOfWeek: number; // 0-6 (Sunday-Saturday)
+  recurrence: 'daily' | 'weekly' | 'custom' | 'one-time';
+  status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
+  eventId?: string; // Link to campaign events
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -57,9 +75,12 @@ export interface Driver {
   licenseNumber: string;
   phone: string;
   email: string;
-  status: 'active' | 'inactive' | 'suspended';
+  idNumber: string;
+  status: 'active' | 'inactive' | 'suspended' | 'fired';
   experience: number; // years
   rating: number; // 1-5
+  salary: number;
+  assignedBusId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -85,40 +106,85 @@ export interface BusAnalytics {
 export const mockBuses: Bus[] = [
   {
     id: '1',
+    busNumber: 'BUS-001',
     plateNumber: 'SL-001-ABC',
-    model: 'Toyota Coaster',
+    model: 'Coaster',
+    manufacturer: 'Toyota',
+    year: 2022,
+    color: 'Blue',
     capacity: 30,
+    busType: 'standard',
+    fuelType: 'diesel',
     status: 'active',
     driverId: '1',
     routeId: '1',
     lastMaintenance: new Date('2024-01-15'),
     nextMaintenance: new Date('2024-04-15'),
+    insuranceExpiry: new Date('2024-12-31'),
+    inspectionDate: new Date('2024-01-10'),
+    isGpsEnabled: true,
+    hasWifi: false,
+    hasAirConditioning: true,
+    isAccessible: false,
+    notes: 'Regular maintenance required',
+    emergencyContact: 'Ahmed Hassan',
+    emergencyPhone: '+252-61-123-4567',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-15'),
   },
   {
     id: '2',
+    busNumber: 'BUS-002',
     plateNumber: 'SL-002-DEF',
-    model: 'Isuzu NPR',
+    model: 'NPR',
+    manufacturer: 'Isuzu',
+    year: 2021,
+    color: 'White',
     capacity: 25,
+    busType: 'minibus',
+    fuelType: 'diesel',
     status: 'maintenance',
     driverId: '2',
     routeId: '2',
     lastMaintenance: new Date('2024-01-20'),
     nextMaintenance: new Date('2024-04-20'),
+    insuranceExpiry: new Date('2024-11-30'),
+    inspectionDate: new Date('2024-01-15'),
+    isGpsEnabled: true,
+    hasWifi: true,
+    hasAirConditioning: false,
+    isAccessible: true,
+    notes: 'Under maintenance for engine repair',
+    emergencyContact: 'Fatima Ali',
+    emergencyPhone: '+252-61-234-5678',
     createdAt: new Date('2024-01-05'),
     updatedAt: new Date('2024-01-20'),
   },
   {
     id: '3',
+    busNumber: 'BUS-003',
     plateNumber: 'SL-003-GHI',
-    model: 'Mercedes Sprinter',
+    model: 'Sprinter',
+    manufacturer: 'Mercedes',
+    year: 2023,
+    color: 'Red',
     capacity: 20,
+    busType: 'deluxe',
+    fuelType: 'diesel',
     status: 'active',
     driverId: '3',
     routeId: '1',
     lastMaintenance: new Date('2024-01-10'),
     nextMaintenance: new Date('2024-04-10'),
+    insuranceExpiry: new Date('2025-01-15'),
+    inspectionDate: new Date('2024-01-05'),
+    isGpsEnabled: true,
+    hasWifi: true,
+    hasAirConditioning: true,
+    isAccessible: true,
+    notes: 'Premium bus with all amenities',
+    emergencyContact: 'Omar Mohamed',
+    emergencyPhone: '+252-61-345-6789',
     createdAt: new Date('2024-01-03'),
     updatedAt: new Date('2024-01-10'),
   },
@@ -210,9 +276,12 @@ export const mockDrivers: Driver[] = [
     licenseNumber: 'SL-DL-001',
     phone: '+252-61-123-4567',
     email: 'ahmed.hassan@example.com',
+    idNumber: 'SL-ID-001',
     status: 'active',
     experience: 5,
     rating: 4.5,
+    salary: 800,
+    assignedBusId: '1',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
   },
@@ -222,9 +291,12 @@ export const mockDrivers: Driver[] = [
     licenseNumber: 'SL-DL-002',
     phone: '+252-61-234-5678',
     email: 'fatima.ali@example.com',
+    idNumber: 'SL-ID-002',
     status: 'active',
     experience: 3,
     rating: 4.2,
+    salary: 750,
+    assignedBusId: '2',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
   },
@@ -234,9 +306,12 @@ export const mockDrivers: Driver[] = [
     licenseNumber: 'SL-DL-003',
     phone: '+252-61-345-6789',
     email: 'omar.mohamed@example.com',
+    idNumber: 'SL-ID-003',
     status: 'inactive',
     experience: 7,
     rating: 4.8,
+    salary: 900,
+    assignedBusId: '3',
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
   },
@@ -251,6 +326,9 @@ export const mockSchedules: Schedule[] = [
     departureTime: '08:00',
     arrivalTime: '09:30',
     dayOfWeek: 1, // Monday
+    recurrence: 'daily',
+    status: 'scheduled',
+    eventId: 'event-1',
     isActive: true,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
@@ -263,6 +341,9 @@ export const mockSchedules: Schedule[] = [
     departureTime: '10:00',
     arrivalTime: '12:00',
     dayOfWeek: 1, // Monday
+    recurrence: 'weekly',
+    status: 'in-progress',
+    eventId: 'event-2',
     isActive: true,
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
@@ -278,6 +359,8 @@ export function getBusStatusColor(status: Bus['status']): string {
       return 'bg-yellow-100 text-yellow-800';
     case 'inactive':
       return 'bg-red-100 text-red-800';
+    case 'retired':
+      return 'bg-gray-100 text-gray-800';
     default:
       return 'bg-gray-100 text-gray-800';
   }
@@ -290,6 +373,8 @@ export function getDriverStatusColor(status: Driver['status']): string {
     case 'inactive':
       return 'bg-gray-100 text-gray-800';
     case 'suspended':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'fired':
       return 'bg-red-100 text-red-800';
     default:
       return 'bg-gray-100 text-gray-800';
@@ -331,4 +416,19 @@ export function formatDistance(km: number): string {
 export function getDayName(dayOfWeek: number): string {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   return days[dayOfWeek];
+}
+
+export function getScheduleStatusColor(status: Schedule['status']): string {
+  switch (status) {
+    case 'scheduled':
+      return 'bg-blue-100 text-blue-800';
+    case 'in-progress':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'completed':
+      return 'bg-green-100 text-green-800';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
 }

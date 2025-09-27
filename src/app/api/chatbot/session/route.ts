@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createChatSession } from '@/lib/chatbot';
+import { createChatSession } from '../../../../lib/chatbot';
 
 export async function GET(request: NextRequest) {
   try {

@@ -40,6 +40,20 @@ import {
   Eye,
   Edit,
   Trash2,
+  Activity,
+  DollarSign,
+  Users,
+  Target,
+  Map,
+  Globe,
+  Languages,
+  Heart,
+  Star,
+  Award,
+  TrendingUp,
+  BarChart3,
+  FileText,
+  Settings,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -75,147 +89,329 @@ import {
 import { DataTable } from "@/components/ui/data-table";
 
 export type Operator = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  position: "field_operator" | "supervisor" | "coordinator" | "manager";
-  department:
-    | "operations"
-    | "logistics"
-    | "communication"
-    | "finance"
-    | "security";
-  status: "active" | "inactive" | "pending" | "suspended";
-  district: string;
-  region: string;
-  startDate: string;
-  salary?: number;
-  systemAccess: string[];
-  permissions: {
-    canManageSupporters: boolean;
-    canManageFunds: boolean;
-    canSendMessages: boolean;
-    canViewReports: boolean;
-  };
-  lastActive: string;
-  createdAt: string;
+  id: number;
+  firstname: string;
+  middlename?: string;
+  lastname: string;
+  fourthname?: string;
+  birthdate?: string;
+  gender?: "male" | "female" | "other";
+  language?: string;
+  special_needs?: string;
+  email?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  role: "operator" | "supervisor" | "admin";
+  status: "pending" | "approved" | "rejected";
+  created_by?: number;
+  updated_by?: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+
+  // Related data
+  phones?: {
+    id: number;
+    operator_id: number;
+    phone_number: string;
+    phone_type: "primary" | "secondary" | "emergency";
+    is_verified: boolean;
+  }[];
+  emergency_contacts?: {
+    id: number;
+    operator_id: number;
+    name: string;
+    relationship: string;
+    phone_number: string;
+    email?: string;
+    address?: string;
+  }[];
+  assigned_tasks?: {
+    id: number;
+    title: string;
+    description?: string;
+    status: "pending" | "in_progress" | "completed" | "cancelled";
+    priority: "low" | "medium" | "high";
+    due_date?: string;
+  }[];
+  assigned_supporters?: any[];
+  assigned_events?: {
+    id: number;
+    title: string;
+    description?: string;
+    event_date: string;
+    location?: string;
+    latitude?: number;
+    longitude?: number;
+    status: "planned" | "ongoing" | "completed" | "cancelled";
+  }[];
+  activity_logs?: {
+    id: number;
+    operator_id: number;
+    action_name: string;
+    entity_type: string;
+    entity_id?: number;
+    description?: string;
+    metadata?: Record<string, any>;
+    created_at: string;
+  }[];
+  funds?: {
+    id: number;
+    operator_id: number;
+    amount: number;
+    category: string;
+    source: string;
+    description?: string;
+    transaction_date: string;
+  }[];
+  allowed_actions?: string[];
+
+  // Additional fields for data table display
+  full_name?: string;
+  age?: number;
+  location_name?: string;
+  last_activity?: string;
+  task_count?: number;
+  supporter_count?: number;
+  event_count?: number;
+  total_funds?: number;
 };
 
 const mockOperators: Operator[] = [
   {
-    id: "OP001",
-    firstName: "Ahmed",
-    lastName: "Hassan",
+    id: 1,
+    firstname: "Ahmed",
+    middlename: "Hassan",
+    lastname: "Mohamed",
+    fourthname: "Ali",
+    birthdate: "1985-03-15",
+    gender: "male",
+    language: "Somali",
+    special_needs: undefined,
     email: "ahmed.hassan@campaign.com",
-    phone: "+252 61 234 5678",
-    position: "manager",
-    department: "operations",
-    status: "active",
-    district: "Hargeisa Central",
-    region: "Maroodi Jeex",
-    startDate: "2024-01-15",
-    salary: 1200,
-    systemAccess: ["basic", "intermediate", "advanced"],
-    permissions: {
-      canManageSupporters: true,
-      canManageFunds: true,
-      canSendMessages: true,
-      canViewReports: true,
-    },
-    lastActive: "2024-01-20",
-    createdAt: "2024-01-15",
+    address: "Hargeisa Central, Maroodi Jeex",
+    latitude: 9.5616,
+    longitude: 44.065,
+    role: "admin",
+    status: "approved",
+    created_by: 1,
+    updated_by: 1,
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-01-20T14:30:00Z",
+    phones: [
+      {
+        id: 1,
+        operator_id: 1,
+        phone_number: "+252 61 234 5678",
+        phone_type: "primary",
+        is_verified: true,
+      },
+      {
+        id: 2,
+        operator_id: 1,
+        phone_number: "+252 61 234 5679",
+        phone_type: "secondary",
+        is_verified: false,
+      },
+    ],
+    emergency_contacts: [
+      {
+        id: 1,
+        operator_id: 1,
+        name: "Fatima Hassan",
+        relationship: "Wife",
+        phone_number: "+252 61 234 5680",
+        email: "fatima.hassan@email.com",
+        address: "Hargeisa Central",
+      },
+    ],
+    assigned_tasks: [
+      {
+        id: 1,
+        title: "Campaign Strategy Review",
+        description: "Review and update campaign strategy for Q1",
+        status: "completed",
+        priority: "high",
+        due_date: "2024-01-25",
+      },
+    ],
+    assigned_supporters: [],
+    assigned_events: [
+      {
+        id: 1,
+        title: "Campaign Launch Event",
+        description: "Official campaign launch in Hargeisa",
+        event_date: "2024-02-01",
+        location: "Hargeisa Convention Center",
+        latitude: 9.5616,
+        longitude: 44.065,
+        status: "planned",
+      },
+    ],
+    activity_logs: [
+      {
+        id: 1,
+        operator_id: 1,
+        action_name: "create_supporter",
+        entity_type: "supporter",
+        entity_id: 101,
+        description: "Created new supporter record",
+        metadata: { supporter_name: "John Doe" },
+        created_at: "2024-01-20T14:30:00Z",
+      },
+    ],
+    funds: [
+      {
+        id: 1,
+        operator_id: 1,
+        amount: 5000,
+        category: "campaign_funds",
+        source: "donation",
+        description: "Initial campaign funding",
+        transaction_date: "2024-01-15",
+      },
+    ],
+    allowed_actions: [
+      "create_supporter",
+      "update_supporter",
+      "approve_supporter",
+      "assign_task",
+      "create_event",
+      "log_fund",
+      "view_map",
+      "generate_report",
+    ],
+    full_name: "Ahmed Hassan Mohamed Ali",
+    age: 39,
+    location_name: "Hargeisa Central, Maroodi Jeex",
+    last_activity: "2024-01-20T14:30:00Z",
+    task_count: 1,
+    supporter_count: 0,
+    event_count: 1,
+    total_funds: 5000,
   },
   {
-    id: "OP002",
-    firstName: "Fatima",
-    lastName: "Ali",
+    id: 2,
+    firstname: "Fatima",
+    middlename: "Ali",
+    lastname: "Ahmed",
+    birthdate: "1990-07-22",
+    gender: "female",
+    language: "Somali",
+    special_needs: undefined,
     email: "fatima.ali@campaign.com",
-    phone: "+252 61 234 5679",
-    position: "supervisor",
-    department: "communication",
-    status: "active",
-    district: "Berbera",
-    region: "Sahil",
-    startDate: "2024-01-10",
-    salary: 800,
-    systemAccess: ["basic", "intermediate"],
-    permissions: {
-      canManageSupporters: true,
-      canManageFunds: false,
-      canSendMessages: true,
-      canViewReports: true,
-    },
-    lastActive: "2024-01-19",
-    createdAt: "2024-01-10",
+    address: "Berbera, Sahil",
+    latitude: 10.4342,
+    longitude: 45.0143,
+    role: "supervisor",
+    status: "approved",
+    created_by: 1,
+    updated_by: 1,
+    created_at: "2024-01-10T09:00:00Z",
+    updated_at: "2024-01-19T16:45:00Z",
+    phones: [
+      {
+        id: 3,
+        operator_id: 2,
+        phone_number: "+252 61 234 5681",
+        phone_type: "primary",
+        is_verified: true,
+      },
+    ],
+    emergency_contacts: [
+      {
+        id: 2,
+        operator_id: 2,
+        name: "Omar Ahmed",
+        relationship: "Brother",
+        phone_number: "+252 61 234 5682",
+        address: "Berbera, Sahil",
+      },
+    ],
+    assigned_tasks: [
+      {
+        id: 2,
+        title: "Supporter Outreach",
+        description: "Contact and register new supporters",
+        status: "in_progress",
+        priority: "medium",
+        due_date: "2024-01-30",
+      },
+    ],
+    assigned_supporters: [],
+    assigned_events: [],
+    activity_logs: [
+      {
+        id: 2,
+        operator_id: 2,
+        action_name: "update_supporter",
+        entity_type: "supporter",
+        entity_id: 102,
+        description: "Updated supporter contact information",
+        created_at: "2024-01-19T16:45:00Z",
+      },
+    ],
+    funds: [],
+    allowed_actions: [
+      "create_supporter",
+      "update_supporter",
+      "assign_task",
+      "view_map",
+      "generate_report",
+    ],
+    full_name: "Fatima Ali Ahmed",
+    age: 34,
+    location_name: "Berbera, Sahil",
+    last_activity: "2024-01-19T16:45:00Z",
+    task_count: 1,
+    supporter_count: 0,
+    event_count: 0,
+    total_funds: 0,
   },
   {
-    id: "OP003",
-    firstName: "Omar",
-    lastName: "Mohamed",
+    id: 3,
+    firstname: "Omar",
+    middlename: "Mohamed",
+    lastname: "Hassan",
+    birthdate: "1995-11-08",
+    gender: "male",
+    language: "Somali",
+    special_needs: undefined,
     email: "omar.mohamed@campaign.com",
-    phone: "+252 61 234 5680",
-    position: "field_operator",
-    department: "logistics",
+    address: "Burao, Togdheer",
+    latitude: 9.5221,
+    longitude: 45.5336,
+    role: "operator",
     status: "pending",
-    district: "Burao",
-    region: "Togdheer",
-    startDate: "2024-01-18",
-    systemAccess: ["basic"],
-    permissions: {
-      canManageSupporters: false,
-      canManageFunds: false,
-      canSendMessages: false,
-      canViewReports: false,
-    },
-    lastActive: "2024-01-18",
-    createdAt: "2024-01-18",
-  },
-  {
-    id: "OP004",
-    firstName: "Aisha",
-    lastName: "Ahmed",
-    email: "aisha.ahmed@campaign.com",
-    phone: "+252 61 234 5681",
-    position: "coordinator",
-    department: "finance",
-    status: "active",
-    district: "Borama",
-    region: "Awdal",
-    startDate: "2024-01-12",
-    salary: 1000,
-    systemAccess: ["basic", "intermediate", "advanced"],
-    permissions: {
-      canManageSupporters: false,
-      canManageFunds: true,
-      canSendMessages: false,
-      canViewReports: true,
-    },
-    lastActive: "2024-01-20",
-    createdAt: "2024-01-12",
-  },
-  {
-    id: "OP005",
-    firstName: "Hassan",
-    lastName: "Ibrahim",
-    email: "hassan.ibrahim@campaign.com",
-    phone: "+252 61 234 5682",
-    position: "field_operator",
-    department: "security",
-    status: "suspended",
-    district: "Las Anod",
-    region: "Sool",
-    startDate: "2024-01-05",
-    systemAccess: ["basic"],
-    permissions: {
-      canManageSupporters: false,
-      canManageFunds: false,
-      canSendMessages: false,
-      canViewReports: false,
-    },
-    lastActive: "2024-01-15",
-    createdAt: "2024-01-05",
+    created_by: 1,
+    updated_by: 1,
+    created_at: "2024-01-18T11:30:00Z",
+    updated_at: "2024-01-18T11:30:00Z",
+    phones: [
+      {
+        id: 4,
+        operator_id: 3,
+        phone_number: "+252 61 234 5683",
+        phone_type: "primary",
+        is_verified: false,
+      },
+    ],
+    emergency_contacts: [],
+    assigned_tasks: [],
+    assigned_supporters: [],
+    assigned_events: [],
+    activity_logs: [],
+    funds: [],
+    allowed_actions: [],
+    full_name: "Omar Mohamed Hassan",
+    age: 29,
+    location_name: "Burao, Togdheer",
+    last_activity: "2024-01-18T11:30:00Z",
+    task_count: 0,
+    supporter_count: 0,
+    event_count: 0,
+    total_funds: 0,
   },
 ];
 
@@ -230,64 +426,77 @@ const getInitials = (name: string) => {
 
 const getStatusColor = (status: Operator["status"]) => {
   switch (status) {
-    case "active":
+    case "approved":
       return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
-    case "inactive":
-      return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+    case "rejected":
+      return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
     case "pending":
       return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
-    case "suspended":
-      return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
     default:
       return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
   }
 };
 
-const getPositionColor = (position: Operator["position"]) => {
-  switch (position) {
-    case "manager":
+const getRoleColor = (role: Operator["role"]) => {
+  switch (role) {
+    case "admin":
       return "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400";
     case "supervisor":
       return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
-    case "coordinator":
-      return "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400";
-    case "field_operator":
+    case "operator":
       return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
     default:
       return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
   }
 };
 
-const getDepartmentIcon = (department: Operator["department"]) => {
-  switch (department) {
-    case "operations":
-      return <Shield className="h-4 w-4 text-blue-600" />;
-    case "logistics":
-      return <Building className="h-4 w-4 text-green-600" />;
-    case "communication":
-      return <Send className="h-4 w-4 text-purple-600" />;
-    case "finance":
-      return <Archive className="h-4 w-4 text-orange-600" />;
-    case "security":
-      return <Shield className="h-4 w-4 text-red-600" />;
+const getGenderIcon = (gender: Operator["gender"]) => {
+  switch (gender) {
+    case "male":
+      return <User className="h-4 w-4 text-blue-600" />;
+    case "female":
+      return <User className="h-4 w-4 text-pink-600" />;
+    case "other":
+      return <User className="h-4 w-4 text-purple-600" />;
     default:
-      return <Building className="h-4 w-4 text-gray-600" />;
+      return <User className="h-4 w-4 text-gray-600" />;
   }
 };
 
 const getStatusIcon = (status: Operator["status"]) => {
   switch (status) {
-    case "active":
+    case "approved":
       return <CheckCircle className="h-4 w-4 text-green-600" />;
-    case "inactive":
-      return <UserX className="h-4 w-4 text-gray-600" />;
+    case "rejected":
+      return <UserX className="h-4 w-4 text-red-600" />;
     case "pending":
       return <Clock className="h-4 w-4 text-yellow-600" />;
-    case "suspended":
-      return <AlertCircle className="h-4 w-4 text-red-600" />;
     default:
       return <AlertCircle className="h-4 w-4 text-gray-600" />;
   }
+};
+
+const calculateAge = (birthdate: string) => {
+  const today = new Date();
+  const birth = new Date(birthdate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+const formatPhoneNumber = (phone: string) => {
+  // Format phone number for display
+  const cleaned = phone.replace(/\D/g, "");
+  if (cleaned.length === 12 && cleaned.startsWith("252")) {
+    return `+${cleaned.slice(0, 3)} ${cleaned.slice(3, 5)} ${cleaned.slice(
+      5,
+      8
+    )} ${cleaned.slice(8)}`;
+  }
+  return phone;
 };
 
 export const columns: ColumnDef<Operator>[] = [
@@ -317,7 +526,7 @@ export const columns: ColumnDef<Operator>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "full_name",
     header: ({ column }) => {
       return (
         <Button
@@ -332,34 +541,40 @@ export const columns: ColumnDef<Operator>[] = [
     },
     cell: ({ row }) => {
       const operator = row.original;
+      const fullName = `${operator.firstname} ${operator.middlename || ""} ${
+        operator.lastname
+      } ${operator.fourthname || ""}`.trim();
       return (
         <div className="flex items-center space-x-3">
           <Avatar className="h-8 w-8">
             <AvatarImage src={`/avatars/${operator.id}.jpg`} />
             <AvatarFallback className="text-xs">
-              {getInitials(`${operator.firstName} ${operator.lastName}`)}
+              {getInitials(fullName)}
             </AvatarFallback>
           </Avatar>
           <div className="space-y-1">
-            <div className="font-medium">
-              {operator.firstName} {operator.lastName}
+            <div className="font-medium">{fullName}</div>
+            <div className="text-sm text-muted-foreground">
+              ID: {operator.id}
             </div>
-            <div className="text-sm text-muted-foreground">{operator.id}</div>
+            {operator.birthdate && (
+              <div className="text-xs text-muted-foreground">
+                Age: {calculateAge(operator.birthdate)}
+              </div>
+            )}
           </div>
         </div>
       );
     },
   },
   {
-    accessorKey: "position",
-    header: "Position",
+    accessorKey: "role",
+    header: "Role",
     cell: ({ row }) => {
-      const position = row.getValue("position") as Operator["position"];
+      const role = row.getValue("role") as Operator["role"];
       return (
         <div className="flex items-center space-x-2">
-          <Badge className={getPositionColor(position)}>
-            {position.replace("_", " ").toUpperCase()}
-          </Badge>
+          <Badge className={getRoleColor(role)}>{role.toUpperCase()}</Badge>
         </div>
       );
     },
@@ -368,14 +583,14 @@ export const columns: ColumnDef<Operator>[] = [
     },
   },
   {
-    accessorKey: "department",
-    header: "Department",
+    accessorKey: "gender",
+    header: "Gender",
     cell: ({ row }) => {
-      const department = row.getValue("department") as Operator["department"];
+      const gender = row.getValue("gender") as Operator["gender"];
       return (
         <div className="flex items-center space-x-2">
-          {getDepartmentIcon(department)}
-          <span className="capitalize">{department}</span>
+          {getGenderIcon(gender)}
+          <span className="capitalize">{gender || "Not specified"}</span>
         </div>
       );
     },
@@ -388,16 +603,32 @@ export const columns: ColumnDef<Operator>[] = [
     header: "Contact",
     cell: ({ row }) => {
       const operator = row.original;
+      const primaryPhone = operator.phones?.find(
+        (p) => p.phone_type === "primary"
+      );
       return (
         <div className="space-y-1">
-          <div className="flex items-center space-x-1 text-sm">
-            <Mail className="h-3 w-3 text-muted-foreground" />
-            <span className="truncate max-w-[120px]">{operator.email}</span>
-          </div>
-          <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-            <Phone className="h-3 w-3" />
-            <span>{operator.phone}</span>
-          </div>
+          {operator.email && (
+            <div className="flex items-center space-x-1 text-sm">
+              <Mail className="h-3 w-3 text-muted-foreground" />
+              <span className="truncate max-w-[120px]">{operator.email}</span>
+            </div>
+          )}
+          {primaryPhone && (
+            <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+              <Phone className="h-3 w-3" />
+              <span>{formatPhoneNumber(primaryPhone.phone_number)}</span>
+              {primaryPhone.is_verified && (
+                <CheckCircle className="h-3 w-3 text-green-500" />
+              )}
+            </div>
+          )}
+          {operator.language && (
+            <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+              <Languages className="h-3 w-3" />
+              <span>{operator.language}</span>
+            </div>
+          )}
         </div>
       );
     },
@@ -411,9 +642,15 @@ export const columns: ColumnDef<Operator>[] = [
         <div className="space-y-1">
           <div className="flex items-center space-x-1 text-sm">
             <MapPin className="h-3 w-3 text-muted-foreground" />
-            <span>{operator.district}</span>
+            <span>
+              {operator.location_name || operator.address || "Not specified"}
+            </span>
           </div>
-          <div className="text-sm text-muted-foreground">{operator.region}</div>
+          {operator.latitude && operator.longitude && (
+            <div className="text-xs text-muted-foreground">
+              {operator.latitude.toFixed(4)}, {operator.longitude.toFixed(4)}
+            </div>
+          )}
         </div>
       );
     },
@@ -448,26 +685,61 @@ export const columns: ColumnDef<Operator>[] = [
     },
   },
   {
-    accessorKey: "permissions",
+    accessorKey: "activity",
+    header: "Activity",
+    cell: ({ row }) => {
+      const operator = row.original;
+      return (
+        <div className="space-y-1">
+          <div className="flex items-center space-x-1 text-sm">
+            <Activity className="h-3 w-3 text-muted-foreground" />
+            <span>{operator.task_count || 0} tasks</span>
+          </div>
+          <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+            <Users className="h-3 w-3" />
+            <span>{operator.supporter_count || 0} supporters</span>
+          </div>
+          <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+            <Calendar className="h-3 w-3" />
+            <span>{operator.event_count || 0} events</span>
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "funds",
+    header: "Funds",
+    cell: ({ row }) => {
+      const operator = row.original;
+      const totalFunds = operator.total_funds || 0;
+      return (
+        <div className="flex items-center space-x-2">
+          <DollarSign className="h-4 w-4 text-green-600" />
+          <span className="text-sm font-medium">
+            ${totalFunds.toLocaleString()}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "allowed_actions",
     header: "Permissions",
     cell: ({ row }) => {
-      const permissions = row.getValue(
-        "permissions"
-      ) as Operator["permissions"];
-      const activePermissions = Object.entries(permissions)
-        .filter(([_, value]) => value)
-        .map(([key, _]) => key.replace("can", "").toLowerCase());
+      const actions = row.getValue("allowed_actions") as string[];
+      const displayActions = actions?.slice(0, 2) || [];
 
       return (
         <div className="flex flex-wrap gap-1">
-          {activePermissions.slice(0, 2).map((permission) => (
-            <Badge key={permission} variant="outline" className="text-xs">
-              {permission}
+          {displayActions.map((action) => (
+            <Badge key={action} variant="outline" className="text-xs">
+              {action.replace("_", " ")}
             </Badge>
           ))}
-          {activePermissions.length > 2 && (
+          {actions && actions.length > 2 && (
             <Badge variant="outline" className="text-xs">
-              +{activePermissions.length - 2}
+              +{actions.length - 2}
             </Badge>
           )}
         </div>
@@ -475,19 +747,24 @@ export const columns: ColumnDef<Operator>[] = [
     },
   },
   {
-    accessorKey: "salary",
-    header: "Salary",
+    accessorKey: "special_needs",
+    header: "Special Needs",
     cell: ({ row }) => {
-      const salary = row.getValue("salary") as number | undefined;
-      return salary ? (
-        <div className="text-sm font-medium">${salary.toLocaleString()}</div>
+      const specialNeeds = row.getValue("special_needs") as string;
+      return specialNeeds ? (
+        <div className="flex items-center space-x-1 text-sm">
+          <Heart className="h-3 w-3 text-muted-foreground" />
+          <span className="truncate max-w-[100px]" title={specialNeeds}>
+            {specialNeeds}
+          </span>
+        </div>
       ) : (
-        <span className="text-muted-foreground">Not set</span>
+        <span className="text-muted-foreground text-sm">None</span>
       );
     },
   },
   {
-    accessorKey: "startDate",
+    accessorKey: "created_at",
     header: ({ column }) => {
       return (
         <Button
@@ -495,13 +772,13 @@ export const columns: ColumnDef<Operator>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="h-8 px-2 lg:px-3"
         >
-          Start Date
+          Created
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
-      const date = new Date(row.getValue("startDate"));
+      const date = new Date(row.getValue("created_at"));
       return (
         <div className="flex items-center space-x-1 text-sm">
           <Calendar className="h-3 w-3 text-muted-foreground" />
@@ -511,10 +788,12 @@ export const columns: ColumnDef<Operator>[] = [
     },
   },
   {
-    accessorKey: "lastActive",
-    header: "Last Active",
+    accessorKey: "last_activity",
+    header: "Last Activity",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("lastActive"));
+      const operator = row.original;
+      const lastActivity = operator.last_activity || operator.updated_at;
+      const date = new Date(lastActivity);
       return (
         <div className="text-sm text-muted-foreground">
           {date.toLocaleDateString()}
@@ -539,7 +818,9 @@ export const columns: ColumnDef<Operator>[] = [
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>Operator Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(operator.id)}
+              onClick={() =>
+                navigator.clipboard.writeText(operator.id.toString())
+              }
             >
               <User className="mr-2 h-4 w-4" />
               Copy operator ID
@@ -567,13 +848,30 @@ export const columns: ColumnDef<Operator>[] = [
               Send message
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            {operator.status === "pending" && (
+              <DropdownMenuItem>
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Approve operator
+              </DropdownMenuItem>
+            )}
+            {operator.status === "approved" && (
+              <DropdownMenuItem>
+                <UserX className="mr-2 h-4 w-4" />
+                Reject operator
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <CheckCircle className="mr-2 h-4 w-4" />
-              Activate operator
+              <Settings className="mr-2 h-4 w-4" />
+              Manage permissions
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <UserX className="mr-2 h-4 w-4" />
-              Deactivate operator
+              <Activity className="mr-2 h-4 w-4" />
+              View activity logs
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <DollarSign className="mr-2 h-4 w-4" />
+              View funds
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
@@ -603,35 +901,36 @@ interface OperatorsDataTableProps {
 export function OperatorsDataTable({
   data = mockOperators,
 }: OperatorsDataTableProps) {
-  const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
+  const [selectedRows, setSelectedRows] = React.useState<number[]>([]);
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
-  const [departmentFilter, setDepartmentFilter] = React.useState<string>("all");
-  const [positionFilter, setPositionFilter] = React.useState<string>("all");
+  const [roleFilter, setRoleFilter] = React.useState<string>("all");
+  const [genderFilter, setGenderFilter] = React.useState<string>("all");
 
   const filteredData = React.useMemo(() => {
     return data.filter((operator) => {
       const statusMatch =
         statusFilter === "all" || operator.status === statusFilter;
-      const departmentMatch =
-        departmentFilter === "all" || operator.department === departmentFilter;
-      const positionMatch =
-        positionFilter === "all" || operator.position === positionFilter;
+      const roleMatch = roleFilter === "all" || operator.role === roleFilter;
+      const genderMatch =
+        genderFilter === "all" || operator.gender === genderFilter;
 
-      return statusMatch && departmentMatch && positionMatch;
+      return statusMatch && roleMatch && genderMatch;
     });
-  }, [data, statusFilter, departmentFilter, positionFilter]);
+  }, [data, statusFilter, roleFilter, genderFilter]);
 
   const handleBulkAction = (action: string) => {
     console.log(`Bulk action: ${action} on ${selectedRows.length} operators`);
     // Implement bulk actions here
   };
 
-  const getUniqueDepartments = () => {
-    return Array.from(new Set(data.map((o) => o.department))).sort();
+  const getUniqueRoles = () => {
+    return Array.from(new Set(data.map((o) => o.role))).sort();
   };
 
-  const getUniquePositions = () => {
-    return Array.from(new Set(data.map((o) => o.position))).sort();
+  const getUniqueGenders = () => {
+    return Array.from(
+      new Set(data.map((o) => o.gender).filter(Boolean))
+    ).sort();
   };
 
   return (
@@ -654,28 +953,24 @@ export function OperatorsDataTable({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="approved">Approved</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="suspended">Suspended</SelectItem>
+                  <SelectItem value="rejected">Rejected</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="department-filter">Department</Label>
-              <Select
-                value={departmentFilter}
-                onValueChange={setDepartmentFilter}
-              >
+              <Label htmlFor="role-filter">Role</Label>
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Departments" />
+                  <SelectValue placeholder="All Roles" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Departments</SelectItem>
-                  {getUniqueDepartments().map((department) => (
-                    <SelectItem key={department} value={department}>
-                      {department.charAt(0).toUpperCase() + department.slice(1)}
+                  <SelectItem value="all">All Roles</SelectItem>
+                  {getUniqueRoles().map((role) => (
+                    <SelectItem key={role} value={role}>
+                      {role.charAt(0).toUpperCase() + role.slice(1)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -683,16 +978,18 @@ export function OperatorsDataTable({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="position-filter">Position</Label>
-              <Select value={positionFilter} onValueChange={setPositionFilter}>
+              <Label htmlFor="gender-filter">Gender</Label>
+              <Select value={genderFilter} onValueChange={setGenderFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Positions" />
+                  <SelectValue placeholder="All Genders" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Positions</SelectItem>
-                  {getUniquePositions().map((position) => (
-                    <SelectItem key={position} value={position}>
-                      {position.replace("_", " ").toUpperCase()}
+                  <SelectItem value="all">All Genders</SelectItem>
+                  {getUniqueGenders().map((gender) => (
+                    <SelectItem key={gender} value={gender || ""}>
+                      {gender
+                        ? gender.charAt(0).toUpperCase() + gender.slice(1)
+                        : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -707,8 +1004,8 @@ export function OperatorsDataTable({
                   size="sm"
                   onClick={() => {
                     setStatusFilter("all");
-                    setDepartmentFilter("all");
-                    setPositionFilter("all");
+                    setRoleFilter("all");
+                    setGenderFilter("all");
                   }}
                 >
                   <RotateCcw className="h-4 w-4 mr-2" />
@@ -753,22 +1050,22 @@ export function OperatorsDataTable({
                     <DropdownMenuLabel>Bulk Actions</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={() => handleBulkAction("activate")}
+                      onClick={() => handleBulkAction("approve")}
                     >
                       <CheckCircle className="mr-2 h-4 w-4" />
-                      Activate Selected
+                      Approve Selected
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => handleBulkAction("deactivate")}
+                      onClick={() => handleBulkAction("reject")}
                     >
                       <UserX className="mr-2 h-4 w-4" />
-                      Deactivate Selected
+                      Reject Selected
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => handleBulkAction("suspend")}
+                      onClick={() => handleBulkAction("archive")}
                     >
-                      <AlertCircle className="mr-2 h-4 w-4" />
-                      Suspend Selected
+                      <Archive className="mr-2 h-4 w-4" />
+                      Archive Selected
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem

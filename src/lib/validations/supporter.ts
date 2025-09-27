@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SupporterFormData } from '@/types/supporter';
+import { SupporterFormData } from '../../types/supporter';
 
 // Phone validation schema
 const phoneSchema = z.object({

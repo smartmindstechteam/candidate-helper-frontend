@@ -39,7 +39,7 @@ import { Separator } from "@/components/ui/separator";
 const busRegistrationSchema = z.object({
   // Bus Information
   busNumber: z.string().min(3, "Bus number must be at least 3 characters"),
-  licensePlate: z
+  plateNumber: z
     .string()
     .min(6, "License plate must be at least 6 characters"),
   busType: z
@@ -234,15 +234,15 @@ export function BusRegistrationForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="licensePlate">License Plate *</Label>
+                <Label htmlFor="plateNumber">License Plate *</Label>
                 <Input
-                  id="licensePlate"
-                  {...form.register("licensePlate")}
+                  id="plateNumber"
+                  {...form.register("plateNumber")}
                   placeholder="e.g., SL-123-ABC"
                 />
-                {form.formState.errors.licensePlate && (
+                {form.formState.errors.plateNumber && (
                   <p className="text-sm text-destructive">
-                    {form.formState.errors.licensePlate.message}
+                    {form.formState.errors.plateNumber.message}
                   </p>
                 )}
               </div>
