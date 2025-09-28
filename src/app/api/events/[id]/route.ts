@@ -49,10 +49,11 @@ let events: Event[] = [
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const eventId = parseInt(params.id);
+    const { id } = await params;
+    const eventId = parseInt(id);
     const event = events.find(e => e.id === eventId);
 
     if (!event) {
@@ -78,10 +79,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const eventId = parseInt(params.id);
+    const { id } = await params;
+    const eventId = parseInt(id);
     const body: EventUpdateRequest = await request.json();
 
     const eventIndex = events.findIndex(e => e.id === eventId);
@@ -116,10 +118,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const eventId = parseInt(params.id);
+    const { id } = await params;
+    const eventId = parseInt(id);
     const eventIndex = events.findIndex(e => e.id === eventId);
 
     if (eventIndex === -1) {

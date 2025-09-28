@@ -147,32 +147,32 @@ const apiClient = new ApiClient(BACKEND_URL);
 export const eventsApi = {
   // Get all events with filtering and pagination
   async getAll(params?: EventSearchParams): Promise<PaginatedResponse<Event>> {
-    return apiClient.get<PaginatedResponse<Event>>('/events', params);
+    return apiClient.get<PaginatedResponse<Event>>('/api/events', params);
   },
 
   // Get single event by ID
   async getById(id: number): Promise<ApiResponse<Event>> {
-    return apiClient.get<ApiResponse<Event>>(`/events/${id}`);
+    return apiClient.get<ApiResponse<Event>>(`/api/events/${id}`);
   },
 
   // Create new event
   async create(data: EventCreateRequest): Promise<ApiResponse<Event>> {
-    return apiClient.post<ApiResponse<Event>>('/events', data);
+    return apiClient.post<ApiResponse<Event>>('/api/events', data);
   },
 
   // Update event
   async update(id: number, data: EventUpdateRequest): Promise<ApiResponse<Event>> {
-    return apiClient.put<ApiResponse<Event>>(`/events/${id}`, data);
+    return apiClient.put<ApiResponse<Event>>(`/api/events/${id}`, data);
   },
 
   // Delete event
   async delete(id: number): Promise<ApiResponse<void>> {
-    return apiClient.delete<ApiResponse<void>>(`/events/${id}`);
+    return apiClient.delete<ApiResponse<void>>(`/api/events/${id}`);
   },
 
   // Get event statistics
   async getStats(): Promise<ApiResponse<any>> {
-    return apiClient.get<ApiResponse<any>>('/events/stats');
+    return apiClient.get<ApiResponse<any>>('/api/events/stats');
   },
 
   // Export events
@@ -199,27 +199,27 @@ export const eventsApi = {
 export const operatorsApi = {
   // Get all operators with filtering and pagination
   async getAll(params?: { page?: number; limit?: number; search?: string; status?: string; role?: string; region_id?: number; district_id?: number }): Promise<PaginatedResponse<Operator>> {
-    return apiClient.get<PaginatedResponse<Operator>>('/operators', params);
+    return apiClient.get<PaginatedResponse<Operator>>('/api/operators', params);
   },
 
   // Get single operator by ID
   async getById(id: number): Promise<ApiResponse<Operator>> {
-    return apiClient.get<ApiResponse<Operator>>(`/operators/${id}`);
+    return apiClient.get<ApiResponse<Operator>>(`/api/operators/${id}`);
   },
 
   // Create new operator
   async create(data: OperatorCreateRequest): Promise<ApiResponse<Operator>> {
-    return apiClient.post<ApiResponse<Operator>>('/operators', data);
+    return apiClient.post<ApiResponse<Operator>>('/api/operators', data);
   },
 
   // Update operator
   async update(id: number, data: OperatorUpdateRequest): Promise<ApiResponse<Operator>> {
-    return apiClient.put<ApiResponse<Operator>>(`/operators/${id}`, data);
+    return apiClient.put<ApiResponse<Operator>>(`/api/operators/${id}`, data);
   },
 
   // Delete operator
   async delete(id: number): Promise<ApiResponse<void>> {
-    return apiClient.delete<ApiResponse<void>>(`/operators/${id}`);
+    return apiClient.delete<ApiResponse<void>>(`/api/operators/${id}`);
   },
 
   // Approve operator
@@ -252,27 +252,27 @@ export const operatorsApi = {
 export const supportersApi = {
   // Get all supporters with filtering and pagination
   async getAll(params?: { page?: number; limit?: number; search?: string; status?: string; region_id?: number; district_id?: number; pollingstation_id?: number; fav_party?: string }): Promise<PaginatedResponse<Supporter>> {
-    return apiClient.get<PaginatedResponse<Supporter>>('/supporters', params);
+    return apiClient.get<PaginatedResponse<Supporter>>('/api/supporters', params);
   },
 
   // Get single supporter by ID
   async getById(id: number): Promise<ApiResponse<Supporter>> {
-    return apiClient.get<ApiResponse<Supporter>>(`/supporters/${id}`);
+    return apiClient.get<ApiResponse<Supporter>>(`/api/supporters/${id}`);
   },
 
   // Create new supporter
   async create(data: SupporterCreateRequest): Promise<ApiResponse<Supporter>> {
-    return apiClient.post<ApiResponse<Supporter>>('/supporters', data);
+    return apiClient.post<ApiResponse<Supporter>>('/api/supporters', data);
   },
 
   // Update supporter
   async update(id: number, data: SupporterUpdateRequest): Promise<ApiResponse<Supporter>> {
-    return apiClient.put<ApiResponse<Supporter>>(`/supporters/${id}`, data);
+    return apiClient.put<ApiResponse<Supporter>>(`/api/supporters/${id}`, data);
   },
 
   // Delete supporter
   async delete(id: number): Promise<ApiResponse<void>> {
-    return apiClient.delete<ApiResponse<void>>(`/supporters/${id}`);
+    return apiClient.delete<ApiResponse<void>>(`/api/supporters/${id}`);
   },
 
   // Approve supporter
@@ -305,23 +305,23 @@ export const supportersApi = {
 export const busApi = {
   // Buses
   async getAllBuses(params?: { page?: number; limit?: number; search?: string; status?: string; busType?: string }): Promise<PaginatedResponse<Bus>> {
-    return apiClient.get<PaginatedResponse<Bus>>('/buses', params);
+    return apiClient.get<PaginatedResponse<Bus>>('/api/buses', params);
   },
 
   async getBusById(id: string): Promise<ApiResponse<Bus>> {
-    return apiClient.get<ApiResponse<Bus>>(`/buses/${id}`);
+    return apiClient.get<ApiResponse<Bus>>(`/api/buses/${id}`);
   },
 
   async createBus(data: Omit<Bus, 'id' | 'createdAt' | 'updatedAt'>): Promise<ApiResponse<Bus>> {
-    return apiClient.post<ApiResponse<Bus>>('/buses', data);
+    return apiClient.post<ApiResponse<Bus>>('/api/buses', data);
   },
 
   async updateBus(id: string, data: Partial<Bus>): Promise<ApiResponse<Bus>> {
-    return apiClient.put<ApiResponse<Bus>>(`/buses/${id}`, data);
+    return apiClient.put<ApiResponse<Bus>>(`/api/buses/${id}`, data);
   },
 
   async deleteBus(id: string): Promise<ApiResponse<void>> {
-    return apiClient.delete<ApiResponse<void>>(`/buses/${id}`);
+    return apiClient.delete<ApiResponse<void>>(`/api/buses/${id}`);
   },
 
   // Routes
@@ -411,27 +411,27 @@ export const fundsApi = {
     amount_max?: number;
     payment_method?: string;
   }): Promise<PaginatedResponse<any>> {
-    return apiClient.get<PaginatedResponse<any>>('/funds', params);
+    return apiClient.get<PaginatedResponse<any>>('/api/funds', params);
   },
 
   // Get single fund by ID
   async getById(id: number): Promise<ApiResponse<any>> {
-    return apiClient.get<ApiResponse<any>>(`/funds/${id}`);
+    return apiClient.get<ApiResponse<any>>(`/api/funds/${id}`);
   },
 
   // Create new fund
   async create(data: any): Promise<ApiResponse<any>> {
-    return apiClient.post<ApiResponse<any>>('/funds', data);
+    return apiClient.post<ApiResponse<any>>('/api/funds', data);
   },
 
   // Update fund
   async update(id: number, data: any): Promise<ApiResponse<any>> {
-    return apiClient.put<ApiResponse<any>>(`/funds/${id}`, data);
+    return apiClient.put<ApiResponse<any>>(`/api/funds/${id}`, data);
   },
 
   // Delete fund
   async delete(id: number): Promise<ApiResponse<void>> {
-    return apiClient.delete<ApiResponse<void>>(`/funds/${id}`);
+    return apiClient.delete<ApiResponse<void>>(`/api/funds/${id}`);
   },
 
   // Get fund statistics

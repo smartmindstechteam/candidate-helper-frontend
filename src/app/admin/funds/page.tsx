@@ -69,7 +69,7 @@ export default function FundsPage() {
         setError(null);
 
         const fundsApiService = new FundsApiService();
-        const response = await fundsApiService.getAllTransactions();
+        const response = await fundsApiService.getAllFunds();
 
         if (response.success) {
           setTransactions(response.data);

@@ -23,7 +23,7 @@ const getEnvVar = (key: string, fallback: string = ''): string => {
 
 // API Configuration
 export const apiConfig: ApiConfig = {
-  baseUrl: getEnvVar('BACKEND_URL', 'http://localhost:3000/api'),
+  baseUrl: getEnvVar('BACKEND_URL', 'http://localhost:3000'),
   timeout: parseInt(getEnvVar('API_TIMEOUT', '30000')),
   retryAttempts: parseInt(getEnvVar('API_RETRY_ATTEMPTS', '3')),
   retryDelay: parseInt(getEnvVar('API_RETRY_DELAY', '1000')),
