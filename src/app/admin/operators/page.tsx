@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Users,
   Plus,
@@ -44,14 +44,43 @@ import {
 import { ModeToggle } from "@/components/theme-toggle";
 import { OperatorsDataTable } from "@/components/operators/operators-data-table";
 import { OperatorRegistrationForm } from "@/components/forms/operator-registration-form";
+import { operatorsApi } from "@/lib/api";
 
 export default function AdminOperatorsPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddOperatorOpen, setIsAddOperatorOpen] = useState(false);
+  const [operators, setOperators] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data for operators
-  const operators = [
+  // Load operators data on component mount
+  useEffect(() => {
+    const fetchOperators = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await operatorsApi.getAll();
+
+        if (response.data) {
+          setOperators(response.data);
+        } else {
+          setError("Failed to load operators data");
+        }
+      } catch (err) {
+        console.error("Failed to fetch operators:", err);
+        setError("Failed to load operators data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOperators();
+  }, []);
+
+  // Mock data for operators (fallback)
+  const mockOperators = [
     {
       id: 1,
       name: "Ahmed Hassan",
@@ -109,7 +138,9 @@ export default function AdminOperatorsPage() {
     }
   };
 
-  const filteredOperators = operators.filter(
+  const filteredOperators = (
+    operators.length > 0 ? operators : mockOperators
+  ).filter(
     (operator) =>
       operator.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       operator.district.toLowerCase().includes(searchTerm.toLowerCase())
@@ -321,7 +352,17 @@ export default function AdminOperatorsPage() {
 
         {/* Operators Tab */}
         <TabsContent value="operators" className="space-y-4">
-          <OperatorsDataTable />
+          {loading ? (
+            <div className="flex items-center justify-center h-32">
+              <div className="text-muted-foreground">Loading operators...</div>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center h-32">
+              <div className="text-destructive">{error}</div>
+            </div>
+          ) : (
+            <OperatorsDataTable data={filteredOperators} />
+          )}
         </TabsContent>
 
         {/* Performance Tab */}

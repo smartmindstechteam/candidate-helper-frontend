@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FundManagementDataTable } from "@/components/funds/fund-management-data-table";
 import { FundManagementForm } from "@/components/forms/fund-management-form";
 import {
@@ -50,11 +50,42 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { fundsApi } from "@/lib/api";
+import { FundsApiService } from "@/lib/funds-api";
 
 export default function FundsPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [timeRange, setTimeRange] = useState("6months");
   const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load transactions data on component mount
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const fundsApiService = new FundsApiService();
+        const response = await fundsApiService.getAllTransactions();
+
+        if (response.success) {
+          setTransactions(response.data);
+        } else {
+          setError("Failed to load transactions data");
+        }
+      } catch (err) {
+        console.error("Failed to fetch transactions:", err);
+        setError("Failed to load transactions data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
 
   // Mock data for charts
   const monthlyData = [
@@ -399,7 +430,19 @@ export default function FundsPage() {
 
         {/* Transactions Tab */}
         <TabsContent value="transactions" className="space-y-4">
-          <FundManagementDataTable />
+          {loading ? (
+            <div className="flex items-center justify-center h-32">
+              <div className="text-muted-foreground">
+                Loading transactions...
+              </div>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center h-32">
+              <div className="text-destructive">{error}</div>
+            </div>
+          ) : (
+            <FundManagementDataTable data={transactions} />
+          )}
         </TabsContent>
 
         {/* Reports Tab */}

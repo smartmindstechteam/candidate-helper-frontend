@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +50,8 @@ import {
   formatDistance,
   getDayName,
 } from "@/lib/bus";
+import { BusApiService } from "@/lib/bus-api";
+import { Bus as BusType } from "@/lib/bus";
 
 export default function BusesPage() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -57,8 +59,40 @@ export default function BusesPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [isAddBusOpen, setIsAddBusOpen] = useState(false);
   const [isAddRouteOpen, setIsAddRouteOpen] = useState(false);
+  const [buses, setBuses] = useState<BusType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredBuses = mockBuses.filter((bus) => {
+  // Load buses data on component mount
+  useEffect(() => {
+    const fetchBuses = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const busApi = new BusApiService();
+        const response = await busApi.getAllBuses();
+
+        if (response.success) {
+          setBuses(response.data);
+        } else {
+          // Fallback to mock data if API fails
+          setBuses(mockBuses);
+          setError("Using mock data - API unavailable");
+        }
+      } catch (err) {
+        console.error("Failed to fetch buses:", err);
+        setError("Failed to load buses data");
+        setBuses(mockBuses);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBuses();
+  }, []);
+
+  const filteredBuses = buses.filter((bus) => {
     const matchesSearch =
       bus.plateNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       bus.model.toLowerCase().includes(searchTerm.toLowerCase());
@@ -141,21 +175,31 @@ export default function BusesPage() {
               </p>
             </CardHeader>
             <CardContent>
-              <BusDataTable
-                data={mockBuses}
-                onView={(bus) => {
-                  console.log("View bus:", bus);
-                  // TODO: Implement view functionality
-                }}
-                onEdit={(bus) => {
-                  console.log("Edit bus:", bus);
-                  // TODO: Implement edit functionality
-                }}
-                onDelete={(bus) => {
-                  console.log("Delete bus:", bus);
-                  // TODO: Implement delete functionality
-                }}
-              />
+              {loading ? (
+                <div className="flex items-center justify-center h-32">
+                  <div className="text-muted-foreground">Loading buses...</div>
+                </div>
+              ) : error ? (
+                <div className="flex items-center justify-center h-32">
+                  <div className="text-destructive">{error}</div>
+                </div>
+              ) : (
+                <BusDataTable
+                  data={filteredBuses}
+                  onView={(bus) => {
+                    console.log("View bus:", bus);
+                    // TODO: Implement view functionality
+                  }}
+                  onEdit={(bus) => {
+                    console.log("Edit bus:", bus);
+                    // TODO: Implement edit functionality
+                  }}
+                  onDelete={(bus) => {
+                    console.log("Delete bus:", bus);
+                    // TODO: Implement delete functionality
+                  }}
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>

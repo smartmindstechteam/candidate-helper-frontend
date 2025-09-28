@@ -65,6 +65,7 @@ import {
   getMaintenanceStatus,
   getMaintenanceStatusColor,
 } from "@/lib/bus";
+import { BusApiService } from "@/lib/bus-api";
 
 interface BusDataTableProps {
   data: BusType[];
@@ -73,10 +74,17 @@ interface BusDataTableProps {
   onView?: (bus: BusType) => void;
 }
 
-export function BusDataTable({ data, onEdit, onDelete, onView }: BusDataTableProps) {
+export function BusDataTable({
+  data,
+  onEdit,
+  onDelete,
+  onView,
+}: BusDataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const columns: ColumnDef<BusType>[] = [
     {
@@ -93,9 +101,7 @@ export function BusDataTable({ data, onEdit, onDelete, onView }: BusDataTablePro
       accessorKey: "plateNumber",
       header: "License Plate",
       cell: ({ row }) => (
-        <div className="font-mono text-sm">
-          {row.getValue("plateNumber")}
-        </div>
+        <div className="font-mono text-sm">{row.getValue("plateNumber")}</div>
       ),
     },
     {
@@ -143,9 +149,7 @@ export function BusDataTable({ data, onEdit, onDelete, onView }: BusDataTablePro
         const maintenanceStatus = getMaintenanceStatus(row.original);
         return (
           <div className="space-y-1">
-            <Badge className={getBusStatusColor(status as any)}>
-              {status}
-            </Badge>
+            <Badge className={getBusStatusColor(status as any)}>{status}</Badge>
             <Badge
               variant="outline"
               className={getMaintenanceStatusColor(maintenanceStatus)}
@@ -166,7 +170,7 @@ export function BusDataTable({ data, onEdit, onDelete, onView }: BusDataTablePro
         if (bus.hasWifi) features.push("WiFi");
         if (bus.hasAirConditioning) features.push("AC");
         if (bus.isAccessible) features.push("Accessible");
-        
+
         return (
           <div className="flex flex-wrap gap-1">
             {features.map((feature) => (
@@ -193,8 +197,10 @@ export function BusDataTable({ data, onEdit, onDelete, onView }: BusDataTablePro
       cell: ({ row }) => {
         const date = new Date(row.getValue("nextMaintenance"));
         const now = new Date();
-        const daysUntil = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        
+        const daysUntil = Math.ceil(
+          (date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
         return (
           <div className="flex items-center space-x-1">
             {daysUntil <= 7 ? (
@@ -279,9 +285,13 @@ export function BusDataTable({ data, onEdit, onDelete, onView }: BusDataTablePro
             className="max-w-sm"
           />
           <Select
-            value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn("status")?.getFilterValue() as string) ?? ""
+            }
             onValueChange={(value) =>
-              table.getColumn("status")?.setFilterValue(value === "all" ? "" : value)
+              table
+                .getColumn("status")
+                ?.setFilterValue(value === "all" ? "" : value)
             }
           >
             <SelectTrigger className="w-40">
@@ -296,9 +306,13 @@ export function BusDataTable({ data, onEdit, onDelete, onView }: BusDataTablePro
             </SelectContent>
           </Select>
           <Select
-            value={(table.getColumn("busType")?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn("busType")?.getFilterValue() as string) ?? ""
+            }
             onValueChange={(value) =>
-              table.getColumn("busType")?.setFilterValue(value === "all" ? "" : value)
+              table
+                .getColumn("busType")
+                ?.setFilterValue(value === "all" ? "" : value)
             }
           >
             <SelectTrigger className="w-40">
@@ -371,9 +385,14 @@ export function BusDataTable({ data, onEdit, onDelete, onView }: BusDataTablePro
       {/* Pagination */}
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
+          Showing{" "}
+          {table.getState().pagination.pageIndex *
+            table.getState().pagination.pageSize +
+            1}{" "}
+          to{" "}
           {Math.min(
-            (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+            (table.getState().pagination.pageIndex + 1) *
+              table.getState().pagination.pageSize,
             table.getFilteredRowModel().rows.length
           )}{" "}
           of {table.getFilteredRowModel().rows.length} entries

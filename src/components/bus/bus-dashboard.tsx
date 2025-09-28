@@ -26,6 +26,7 @@ import {
   getMaintenanceStatus,
   getMaintenanceStatusColor,
 } from "@/lib/bus";
+import { BusApiService } from "@/lib/bus-api";
 
 interface BusDashboardProps {
   className?: string;
@@ -34,38 +35,90 @@ interface BusDashboardProps {
 export function BusDashboard({ className = "" }: BusDashboardProps) {
   const [analytics, setAnalytics] = useState<BusAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      const mockAnalytics: BusAnalytics = {
-        totalBuses: mockBuses.length,
-        activeBuses: mockBuses.filter((b) => b.status === "active").length,
-        maintenanceBuses: mockBuses.filter((b) => b.status === "maintenance")
-          .length,
-        inactiveBuses: mockBuses.filter((b) => b.status === "inactive").length,
-        totalRoutes: mockRoutes.length,
-        activeRoutes: mockRoutes.filter((r) => r.isActive).length,
-        totalDrivers: mockDrivers.length,
-        activeDrivers: mockDrivers.filter((d) => d.status === "active").length,
-        dailyTrips: mockSchedules.filter((s) => s.isActive).length,
-        weeklyTrips: mockSchedules.filter((s) => s.isActive).length * 7,
-        monthlyTrips: mockSchedules.filter((s) => s.isActive).length * 30,
-        averageUtilization: 75,
-        maintenanceAlerts: mockBuses.filter((b) => {
-          const now = new Date();
-          const daysUntilMaintenance = Math.ceil(
-            (b.nextMaintenance.getTime() - now.getTime()) /
-              (1000 * 60 * 60 * 24)
-          );
-          return daysUntilMaintenance <= 30;
-        }).length,
-        driverAlerts: mockDrivers.filter((d) => d.status === "suspended")
-          .length,
-      };
-      setAnalytics(mockAnalytics);
-      setLoading(false);
-    }, 1000);
+    const fetchAnalytics = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const busApi = new BusApiService();
+        const analyticsResponse = await busApi.getAnalytics();
+
+        if (analyticsResponse.success) {
+          setAnalytics(analyticsResponse.data);
+        } else {
+          // Fallback to mock data if API fails
+          const mockAnalytics: BusAnalytics = {
+            totalBuses: mockBuses.length,
+            activeBuses: mockBuses.filter((b) => b.status === "active").length,
+            maintenanceBuses: mockBuses.filter(
+              (b) => b.status === "maintenance"
+            ).length,
+            inactiveBuses: mockBuses.filter((b) => b.status === "inactive")
+              .length,
+            totalRoutes: mockRoutes.length,
+            activeRoutes: mockRoutes.filter((r) => r.isActive).length,
+            totalDrivers: mockDrivers.length,
+            activeDrivers: mockDrivers.filter((d) => d.status === "active")
+              .length,
+            dailyTrips: mockSchedules.filter((s) => s.isActive).length,
+            weeklyTrips: mockSchedules.filter((s) => s.isActive).length * 7,
+            monthlyTrips: mockSchedules.filter((s) => s.isActive).length * 30,
+            averageUtilization: 75,
+            maintenanceAlerts: mockBuses.filter((b) => {
+              const now = new Date();
+              const daysUntilMaintenance = Math.ceil(
+                (b.nextMaintenance.getTime() - now.getTime()) /
+                  (1000 * 60 * 60 * 24)
+              );
+              return daysUntilMaintenance <= 30;
+            }).length,
+            driverAlerts: mockDrivers.filter((d) => d.status === "suspended")
+              .length,
+          };
+          setAnalytics(mockAnalytics);
+          setError("Using mock data - API unavailable");
+        }
+      } catch (err) {
+        console.error("Failed to fetch bus analytics:", err);
+        setError("Failed to load analytics data");
+        // Fallback to mock data
+        const mockAnalytics: BusAnalytics = {
+          totalBuses: mockBuses.length,
+          activeBuses: mockBuses.filter((b) => b.status === "active").length,
+          maintenanceBuses: mockBuses.filter((b) => b.status === "maintenance")
+            .length,
+          inactiveBuses: mockBuses.filter((b) => b.status === "inactive")
+            .length,
+          totalRoutes: mockRoutes.length,
+          activeRoutes: mockRoutes.filter((r) => r.isActive).length,
+          totalDrivers: mockDrivers.length,
+          activeDrivers: mockDrivers.filter((d) => d.status === "active")
+            .length,
+          dailyTrips: mockSchedules.filter((s) => s.isActive).length,
+          weeklyTrips: mockSchedules.filter((s) => s.isActive).length * 7,
+          monthlyTrips: mockSchedules.filter((s) => s.isActive).length * 30,
+          averageUtilization: 75,
+          maintenanceAlerts: mockBuses.filter((b) => {
+            const now = new Date();
+            const daysUntilMaintenance = Math.ceil(
+              (b.nextMaintenance.getTime() - now.getTime()) /
+                (1000 * 60 * 60 * 24)
+            );
+            return daysUntilMaintenance <= 30;
+          }).length,
+          driverAlerts: mockDrivers.filter((d) => d.status === "suspended")
+            .length,
+        };
+        setAnalytics(mockAnalytics);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
   }, []);
 
   if (loading) {

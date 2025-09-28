@@ -5,8 +5,38 @@ import { SupportersDataTable } from "@/components/supporters/supporters-data-tab
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Users, Filter, Download } from "lucide-react";
+import { supportersApi } from "@/lib/api";
 
 export default function SupportersPage() {
+  const [supporters, setSupporters] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  // Load supporters data on component mount
+  React.useEffect(() => {
+    const fetchSupporters = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await supportersApi.getAll();
+
+        if (response.data) {
+          setSupporters(response.data);
+        } else {
+          setError("Failed to load supporters data");
+        }
+      } catch (err) {
+        console.error("Failed to fetch supporters:", err);
+        setError("Failed to load supporters data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSupporters();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -119,7 +149,19 @@ export default function SupportersPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <SupportersDataTable />
+            {loading ? (
+              <div className="flex items-center justify-center h-32">
+                <div className="text-muted-foreground">
+                  Loading supporters...
+                </div>
+              </div>
+            ) : error ? (
+              <div className="flex items-center justify-center h-32">
+                <div className="text-destructive">{error}</div>
+              </div>
+            ) : (
+              <SupportersDataTable data={supporters} />
+            )}
           </CardContent>
         </Card>
       </div>

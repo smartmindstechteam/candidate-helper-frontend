@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { formUtils, useFormSubmission } from "@/lib/form-submission";
 
 const fundManagementSchema = z.object({
   // Transaction Information
@@ -179,9 +180,11 @@ interface FundManagementFormProps {
 export function FundManagementForm({
   onSuccess,
 }: FundManagementFormProps = {}) {
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
+
+  const { isSubmitting, error, errors, submitForm, clearErrors } =
+    useFormSubmission();
 
   const form = useForm<FundManagementFormData>({
     resolver: zodResolver(fundManagementSchema),
@@ -200,17 +203,13 @@ export function FundManagementForm({
   const transactionType = form.watch("transactionType");
 
   const onSubmit = async (data: FundManagementFormData) => {
-    setIsSubmitting(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Fund management data:", data);
+    const result = await submitForm(async () => {
+      return formUtils.submitFundManagement(data, false);
+    });
+
+    if (result.success) {
       setIsSuccess(true);
       onSuccess?.();
-    } catch (error) {
-      console.error("Transaction error:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

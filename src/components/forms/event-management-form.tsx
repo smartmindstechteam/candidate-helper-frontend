@@ -46,6 +46,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { eventFormSchema, type EventFormInput } from "@/lib/validations/event";
 import { type Event } from "@/types/event";
+import { formUtils, useFormSubmission } from "@/lib/form-submission";
 
 // Mock data - in a real app, this would come from API
 const districts = [
@@ -136,7 +137,6 @@ export function EventManagementForm({
   onSuccess,
   onCancel,
 }: EventManagementFormProps) {
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
   const [newTag, setNewTag] = React.useState("");
@@ -144,6 +144,9 @@ export function EventManagementForm({
     []
   );
   const [newMediaLink, setNewMediaLink] = React.useState("");
+
+  const { isSubmitting, error, errors, submitForm, clearErrors } =
+    useFormSubmission();
 
   const form = useForm<EventFormInput>({
     resolver: zodResolver(eventFormSchema),
@@ -187,63 +190,13 @@ export function EventManagementForm({
   });
 
   const onSubmit = async (data: EventFormInput) => {
-    setIsSubmitting(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Event form data:", data);
+    const result = await submitForm(async () => {
+      return formUtils.submitEvent(data, !!event, event?.id);
+    });
+
+    if (result.success && result.data) {
       setIsSuccess(true);
-
-      // Create event object for callback
-      const eventData: Event = {
-        id: event?.id || 0,
-        title: data.title,
-        type: data.type,
-        category: data.category,
-        timezone: data.timezone,
-        description: data.description,
-        objective: data.objective,
-        tags: data.tags,
-        priority: data.priority,
-        start_time: data.start_time,
-        end_time: data.end_time,
-        recurrence: data.recurrence,
-        recurrence_rule: data.recurrence_rule,
-        setup_time: data.setup_time,
-        teardown_time: data.teardown_time,
-        venue: data.venue,
-        city: data.city,
-        district_id: data.district_id,
-        region_id: data.region_id,
-        address: data.address,
-        lat: data.lat,
-        lng: data.lng,
-        max_capacity: data.max_capacity,
-        expected_attendance: data.expected_attendance,
-        actual_attendance: data.actual_attendance,
-        budget_amount: data.budget_amount,
-        estimated_cost: data.estimated_cost,
-        funding_source_id: data.funding_source_id,
-        status: data.status,
-        media_links: data.media_links,
-        organizer_name: data.organizer_name,
-        organizer_contact: data.organizer_contact,
-        backup_contact: data.backup_contact,
-        assigned_operator_id: data.assigned_operator_id,
-        risk_assessment: data.risk_assessment,
-        contingency_plan: data.contingency_plan,
-        feedback_link: data.feedback_link,
-        created_by: 1, // This would come from auth context
-        updated_by: 1, // This would come from auth context
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-
-      onSuccess?.(eventData);
-    } catch (error) {
-      console.error("Event creation error:", error);
-    } finally {
-      setIsSubmitting(false);
+      onSuccess?.(result.data);
     }
   };
 
@@ -362,6 +315,16 @@ export function EventManagementForm({
         </p>
       </CardHeader>
       <CardContent>
+        {error && (
+          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-md">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-destructive" />
+              <p className="text-sm text-destructive font-medium">Error</p>
+            </div>
+            <p className="text-sm text-destructive mt-1">{error}</p>
+          </div>
+        )}
+
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Basic Event Information */}
           <div className="space-y-4">

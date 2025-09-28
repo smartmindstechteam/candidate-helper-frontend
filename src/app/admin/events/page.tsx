@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EventsDataTable } from "@/components/events/events-data-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,16 +23,21 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { type Event } from "@/types/event";
+import { eventsApi } from "@/lib/api";
 
 export default function EventsPage() {
   const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isEditEventOpen, setIsEditEventOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const handleCreateEvent = (event: Event) => {
     setEvents((prev) => [...prev, event]);
     setIsCreateEventOpen(false);
+    // Show success message
+    console.log("Event created successfully:", event);
   };
 
   const handleEditEvent = (event: Event) => {
@@ -46,6 +51,8 @@ export default function EventsPage() {
     );
     setIsEditEventOpen(false);
     setSelectedEvent(null);
+    // Show success message
+    console.log("Event updated successfully:", updatedEvent);
   };
 
   const handleDeleteEvent = (eventToDelete: Event) => {
@@ -56,6 +63,31 @@ export default function EventsPage() {
     // Implement view event functionality
     console.log("View event:", event);
   };
+
+  // Load events data on component mount
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await eventsApi.getAll();
+
+        if (response.data) {
+          setEvents(response.data);
+        } else {
+          setError("Failed to load events data");
+        }
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+        setError("Failed to load events data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   // Calculate stats from events data
   const totalEvents = events.length;
@@ -153,13 +185,23 @@ export default function EventsPage() {
       </div>
 
       {/* Events Data Table */}
-      <EventsDataTable
-        data={events}
-        onCreateEvent={() => setIsCreateEventOpen(true)}
-        onEditEvent={handleEditEvent}
-        onDeleteEvent={handleDeleteEvent}
-        onViewEvent={handleViewEvent}
-      />
+      {loading ? (
+        <div className="flex items-center justify-center h-32">
+          <div className="text-muted-foreground">Loading events...</div>
+        </div>
+      ) : error ? (
+        <div className="flex items-center justify-center h-32">
+          <div className="text-destructive">{error}</div>
+        </div>
+      ) : (
+        <EventsDataTable
+          data={events}
+          onCreateEvent={() => setIsCreateEventOpen(true)}
+          onEditEvent={handleEditEvent}
+          onDeleteEvent={handleDeleteEvent}
+          onViewEvent={handleViewEvent}
+        />
+      )}
 
       {/* Edit Event Dialog */}
       <Dialog open={isEditEventOpen} onOpenChange={setIsEditEventOpen}>

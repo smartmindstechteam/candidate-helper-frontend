@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { formUtils, useFormSubmission } from "@/lib/form-submission";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -40,10 +41,11 @@ interface AuthLoginFormProps {
 }
 
 export function AuthLoginForm({ onSuccess, onError }: AuthLoginFormProps = {}) {
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+
+  const { isSubmitting, error, errors, submitForm, clearErrors } =
+    useFormSubmission();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -54,21 +56,15 @@ export function AuthLoginForm({ onSuccess, onError }: AuthLoginFormProps = {}) {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsSubmitting(true);
-    setError(null);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Login data:", data);
+    const result = await submitForm(async () => {
+      return formUtils.submitAuth(data, "login");
+    });
+
+    if (result.success) {
       setIsSuccess(true);
       onSuccess?.();
-    } catch (error) {
-      const errorMessage = "Invalid credentials. Please try again.";
-      setError(errorMessage);
-      onError?.(errorMessage);
-      console.error("Login error:", error);
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      onError?.(result.error || "Login failed");
     }
   };
 

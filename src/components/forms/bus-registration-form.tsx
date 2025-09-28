@@ -18,6 +18,7 @@ import {
   Route,
   Fuel,
   Settings,
+  AlertCircle,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -35,13 +36,12 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { formUtils, useFormSubmission } from "@/lib/form-submission";
 
 const busRegistrationSchema = z.object({
   // Bus Information
   busNumber: z.string().min(3, "Bus number must be at least 3 characters"),
-  plateNumber: z
-    .string()
-    .min(6, "License plate must be at least 6 characters"),
+  plateNumber: z.string().min(6, "License plate must be at least 6 characters"),
   busType: z
     .enum(["standard", "deluxe", "minibus", "coach"])
     .refine((val) => val !== undefined, {
@@ -127,9 +127,11 @@ const routes = [
 ];
 
 export function BusRegistrationForm() {
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
   const [selectedBusType, setSelectedBusType] = React.useState("");
+
+  const { isSubmitting, error, errors, submitForm, clearErrors } =
+    useFormSubmission();
 
   const form = useForm<BusRegistrationFormData>({
     resolver: zodResolver(busRegistrationSchema),
@@ -143,16 +145,12 @@ export function BusRegistrationForm() {
   });
 
   const onSubmit = async (data: BusRegistrationFormData) => {
-    setIsSubmitting(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Bus registration data:", data);
+    const result = await submitForm(async () => {
+      return formUtils.submitBusRegistration(data);
+    });
+
+    if (result.success) {
       setIsSuccess(true);
-    } catch (error) {
-      console.error("Registration error:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -209,6 +207,16 @@ export function BusRegistrationForm() {
         </p>
       </CardHeader>
       <CardContent>
+        {error && (
+          <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-md">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 text-destructive" />
+              <p className="text-sm text-destructive font-medium">Error</p>
+            </div>
+            <p className="text-sm text-destructive mt-1">{error}</p>
+          </div>
+        )}
+
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Bus Information Section */}
           <div className="space-y-4">
@@ -726,7 +734,3 @@ export function BusRegistrationForm() {
     </Card>
   );
 }
-
-
-
-
