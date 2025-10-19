@@ -2,162 +2,19 @@
 
 import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
-import { SupporterViewPage } from "@/components/supporters/supporter-view-page";
-import { Supporter } from "@/types/supporter";
+
+import { useSupporter } from "@/hooks/api/useSupporters";
+import { SupporterProfilePage } from "@/components/supporters/supporter-view-page";
 
 // Mock data - in a real app, this would come from an API
-const mockSupporters: Supporter[] = [
-  {
-    id: 1,
-    firstname: "Ahmed",
-    middlename: "Hassan",
-    lastname: "Ali",
-    email: "ahmed.hassan@email.com",
-    status: "approved",
-    created_at: "2024-01-15T10:00:00Z",
-    updated_at: "2024-01-20T10:00:00Z",
-    gender: "male",
-    language: "somali",
-    residency_address: "Hargeisa Central, Maroodi Jeex",
-    voting_address: "Hargeisa Central, Maroodi Jeex",
-    voter_id: "V001234567",
-    fav_party: "Party A",
-    phones: [
-      {
-        id: 1,
-        supporter_id: 1,
-        phone_number: "+252 61 234 5678",
-        phone_type: "primary",
-        is_verified: true,
-        created_at: "2024-01-15T10:00:00Z",
-        updated_at: "2024-01-15T10:00:00Z",
-      },
-    ],
-    emergency_contacts: [
-      {
-        id: 1,
-        supporter_id: 1,
-        name: "Hassan Ali",
-        relationship: "Father",
-        phone_number: "+252 61 234 5679",
-        created_at: "2024-01-15T10:00:00Z",
-        updated_at: "2024-01-15T10:00:00Z",
-      },
-    ],
-    region: {
-      id: 1,
-      name: "Maroodi Jeex",
-      created_at: "2024-01-01T00:00:00Z",
-      updated_at: "2024-01-01T00:00:00Z",
-    },
-    district: {
-      id: 1,
-      name: "Hargeisa Central",
-      region_id: 1,
-      created_at: "2024-01-01T00:00:00Z",
-      updated_at: "2024-01-01T00:00:00Z",
-    },
-    pollingstation: {
-      id: 1,
-      name: "Hargeisa Central Primary School",
-      district_id: 1,
-      latitude: 9.5616,
-      longitude: 44.065,
-      created_at: "2024-01-01T00:00:00Z",
-      updated_at: "2024-01-01T00:00:00Z",
-    },
-  },
-  {
-    id: 2,
-    firstname: "Fatima",
-    lastname: "Mohamed",
-    email: "fatima.mohamed@email.com",
-    status: "approved",
-    created_at: "2024-01-18T10:00:00Z",
-    updated_at: "2024-01-19T10:00:00Z",
-    gender: "female",
-    language: "somali",
-    residency_address: "Hargeisa North, Maroodi Jeex",
-    voting_address: "Hargeisa North, Maroodi Jeex",
-    voter_id: "V001234568",
-    fav_party: "Party B",
-    phones: [
-      {
-        id: 2,
-        supporter_id: 2,
-        phone_number: "+252 61 345 6789",
-        phone_type: "primary",
-        is_verified: true,
-        created_at: "2024-01-18T10:00:00Z",
-        updated_at: "2024-01-18T10:00:00Z",
-      },
-    ],
-    emergency_contacts: [
-      {
-        id: 2,
-        supporter_id: 2,
-        name: "Mohamed Ahmed",
-        relationship: "Brother",
-        phone_number: "+252 61 345 6790",
-        created_at: "2024-01-18T10:00:00Z",
-        updated_at: "2024-01-18T10:00:00Z",
-      },
-    ],
-    region: {
-      id: 1,
-      name: "Maroodi Jeex",
-      created_at: "2024-01-01T00:00:00Z",
-      updated_at: "2024-01-01T00:00:00Z",
-    },
-    district: {
-      id: 2,
-      name: "Hargeisa North",
-      region_id: 1,
-      created_at: "2024-01-01T00:00:00Z",
-      updated_at: "2024-01-01T00:00:00Z",
-    },
-    pollingstation: {
-      id: 2,
-      name: "Hargeisa North Secondary School",
-      district_id: 2,
-      latitude: 9.58,
-      longitude: 44.08,
-      created_at: "2024-01-01T00:00:00Z",
-      updated_at: "2024-01-01T00:00:00Z",
-    },
-  },
-];
 
 export default function SupporterViewPageRoute() {
   const params = useParams();
   const router = useRouter();
-  const [supporter, setSupporter] = React.useState<Supporter | null>(null);
-  const [loading, setLoading] = React.useState(true);
+  const { data, isLoading } = useSupporter(Number(params.id));
+  const supporter = data?.supporter;
 
-  React.useEffect(() => {
-    const supporterId = parseInt(params.id as string);
-    const foundSupporter = mockSupporters.find((s) => s.id === supporterId);
-
-    if (foundSupporter) {
-      setSupporter(foundSupporter);
-    } else {
-      // Handle supporter not found
-      router.push("/admin/supporters");
-    }
-    setLoading(false);
-  }, [params.id, router]);
-
-  const handleEdit = () => {
-    if (supporter) {
-      router.push(`/admin/supporters/${supporter.id}/edit`);
-    }
-  };
-
-  const handleBack = () => {
-    router.push("/admin/supporters");
-  };
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
@@ -169,7 +26,9 @@ export default function SupporterViewPageRoute() {
       </div>
     );
   }
-
+  const handleBack = () => {
+    router.push('/admin/supporters');
+  }
   if (!supporter) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -191,11 +50,5 @@ export default function SupporterViewPageRoute() {
     );
   }
 
-  return (
-    <SupporterViewPage
-      supporter={supporter}
-      onEdit={handleEdit}
-      onBack={handleBack}
-    />
-  );
+  return <SupporterProfilePage supporterId={params?.id?.toString() || "0"} />;
 }

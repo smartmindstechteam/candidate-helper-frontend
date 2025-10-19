@@ -43,7 +43,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ModeToggle } from "@/components/theme-toggle";
-import { CommunicationMessageForm } from "@/components/forms/communication-message-form";
 import {
   Dialog,
   DialogContent,
@@ -150,9 +149,6 @@ export default function AdminCommunicationPage() {
               <DialogHeader>
                 <DialogTitle>Create New Message</DialogTitle>
               </DialogHeader>
-              <CommunicationMessageForm
-                onSuccess={() => setIsNewMessageOpen(false)}
-              />
             </DialogContent>
           </Dialog>
         </div>

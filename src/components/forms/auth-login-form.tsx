@@ -11,7 +11,6 @@ import {
   EyeOff,
   CheckCircle,
   AlertCircle,
-  User,
   Shield,
 } from "lucide-react";
 
@@ -22,15 +21,13 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { formUtils, useFormSubmission } from "@/lib/form-submission";
+import { useAuth } from "@/hooks/api/useAuth";
+import { Router } from "next/router";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   rememberMe: z.boolean().optional(),
-  userType: z.enum(["admin", "operator", "supporter"], {
-    message: "Please select a user type",
-  }),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -43,28 +40,35 @@ interface AuthLoginFormProps {
 export function AuthLoginForm({ onSuccess, onError }: AuthLoginFormProps = {}) {
   const [isSuccess, setIsSuccess] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
-
-  const { isSubmitting, error, errors, submitForm, clearErrors } =
-    useFormSubmission();
+  const { authStatus, login, profile } = useAuth();
+  const { isLoading, error } = authStatus;
+  const { mutateAsync: loginApi, isPending: isSubmitting } = login;
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       rememberMe: false,
-      userType: "supporter",
     },
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    const result = await submitForm(async () => {
-      return formUtils.submitAuth(data, "login");
-    });
+    const result = await (async () => {
+      // Use the auth context for authentication
+      const loginData = {
+        email: data.email,
+        password: data.password,
+      };
 
-    if (result.success) {
+      return await loginApi(loginData);
+    })();
+
+    if (result.data) {
+      console.log(result.data);
       setIsSuccess(true);
       onSuccess?.();
     } else {
-      onError?.(result.error || "Login failed");
+      onError?.("Login failed");
+      console.log(result.data);
     }
   };
 
@@ -108,62 +112,11 @@ export function AuthLoginForm({ onSuccess, onError }: AuthLoginFormProps = {}) {
           {error && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{error.message}</AlertDescription>
             </Alert>
           )}
 
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="userType">User Type *</Label>
-              <div className="grid grid-cols-3 gap-2">
-                <Button
-                  type="button"
-                  variant={
-                    form.watch("userType") === "admin" ? "default" : "outline"
-                  }
-                  size="sm"
-                  onClick={() => form.setValue("userType", "admin")}
-                  className="flex items-center gap-2"
-                >
-                  <Shield className="h-4 w-4" />
-                  Admin
-                </Button>
-                <Button
-                  type="button"
-                  variant={
-                    form.watch("userType") === "operator"
-                      ? "default"
-                      : "outline"
-                  }
-                  size="sm"
-                  onClick={() => form.setValue("userType", "operator")}
-                  className="flex items-center gap-2"
-                >
-                  <User className="h-4 w-4" />
-                  Operator
-                </Button>
-                <Button
-                  type="button"
-                  variant={
-                    form.watch("userType") === "supporter"
-                      ? "default"
-                      : "outline"
-                  }
-                  size="sm"
-                  onClick={() => form.setValue("userType", "supporter")}
-                  className="flex items-center gap-2"
-                >
-                  <User className="h-4 w-4" />
-                  Supporter
-                </Button>
-              </div>
-              {form.formState.errors.userType && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.userType.message}
-                </p>
-              )}
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="email">Email Address *</Label>
               <div className="relative">

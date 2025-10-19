@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChatbotInterface } from "@/components/chatbot/chatbot-interface";
 import {
   Bot,
   MessageCircle,
@@ -16,7 +15,6 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
-import { CHART_COLORS, getChartColor } from "@/lib/chart-colors";
 
 // Mock data for chatbot analytics
 const chatStats = {
@@ -125,14 +123,7 @@ export default function AdminChatbotPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Chat Interface */}
             <div className="lg:col-span-2">
-              <Card className="h-[600px] card-glass">
-                <ChatbotInterface
-                  userId="admin-1"
-                  userRole="admin"
-                  currentModule="chatbot"
-                  className="h-full"
-                />
-              </Card>
+              <Card className="h-[600px] card-glass"></Card>
             </div>
 
             {/* Quick Stats */}
@@ -325,15 +316,7 @@ export default function AdminChatbotPage() {
                           </Badge>
                         </div>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="h-2 rounded-full transition-all duration-300"
-                          style={{
-                            width: `${stat.percentage}%`,
-                            backgroundColor: getChartColor(index),
-                          }}
-                        ></div>
-                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2"></div>
                     </div>
                   ))}
                 </div>

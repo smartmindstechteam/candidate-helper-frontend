@@ -47,13 +47,20 @@ import {
 } from "@/components/ui/table";
 
 interface DataTableProps<TData, TValue> {
+  registering:{
+    link:string,
+    name:string
+  },
+  filteringField:string,
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
 export function DataTable<TData, TValue>({
+  registering,
   columns,
   data,
+  filteringField
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -64,6 +71,7 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
+    
     data,
     columns,
     onSortingChange: setSorting,
@@ -87,12 +95,12 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-between py-4">
         <div className="flex items-center space-x-2">
           <Input
-            placeholder="Filter supporters..."
+            placeholder="Filter..."
             value={
-              (table.getColumn("firstname")?.getFilterValue() as string) ?? ""
+              (table.getColumn(filteringField)?.getFilterValue() as string) ?? ""
             }
             onChange={(event) =>
-              table.getColumn("firstname")?.setFilterValue(event.target.value)
+              table.getColumn(filteringField)?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
@@ -102,10 +110,10 @@ export function DataTable<TData, TValue>({
           </Button>
         </div>
         <div className="flex items-center space-x-2">
-          <Link href="/admin/register">
+          <Link href={registering.link}>
             <Button className="btn-gradient">
               <Plus className="mr-2 h-4 w-4" />
-              Add Supporter
+              Add {registering.name}
             </Button>
           </Link>
           <DropdownMenu>

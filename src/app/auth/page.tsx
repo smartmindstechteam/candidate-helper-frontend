@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, CheckCircle, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +16,21 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
+
+  // Redirect if already authenticated
+  // useEffect(() => {
+  //   if (isAuthenticated && user) {
+  //     const roleRedirects: Record<string, string> = {
+  //       admin: "/admin",
+  //       operator: "/operator",
+  //       supporter: "/supporter",
+  //     };
+
+  //     const redirectPath = roleRedirects[user.role || ""] || "/";
+  //     router.push(redirectPath);
+  //   }
+  // }, [isAuthenticated, user, router]);
 
   const roleIcons = {
     admin: "🛡️",
@@ -47,6 +63,7 @@ export default function AuthPage() {
   };
 
   const handleSuccess = () => {
+    router.push(isLogin ? "/admin" : "/");
     setIsSuccess(true);
   };
 

@@ -43,42 +43,17 @@ import {
 } from "@/components/ui/dialog";
 import { ModeToggle } from "@/components/theme-toggle";
 import { OperatorsDataTable } from "@/components/operators/operators-data-table";
-import { OperatorRegistrationForm } from "@/components/forms/operator-registration-form";
-import { operatorsApi } from "@/lib/api";
+import OperatorRegisterationForm from "@/components/forms/operator-registration-form";
+import { useOperators } from "@/hooks/api/useOperators";
 
 export default function AdminOperatorsPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddOperatorOpen, setIsAddOperatorOpen] = useState(false);
-  const [operators, setOperators] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { isLoading, isError: error, data: response } = useOperators();
 
-  // Load operators data on component mount
-  useEffect(() => {
-    const fetchOperators = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await operatorsApi.getAll();
-
-        if (response.data) {
-          setOperators(response.data);
-        } else {
-          setError("Failed to load operators data");
-        }
-      } catch (err) {
-        console.error("Failed to fetch operators:", err);
-        setError("Failed to load operators data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOperators();
-  }, []);
-
+  const operators = response?.operators;
+  console.log(operators);
   // Mock data for operators (fallback)
   const mockOperators = [
     {
@@ -138,12 +113,17 @@ export default function AdminOperatorsPage() {
     }
   };
 
-  const filteredOperators = (
-    operators.length > 0 ? operators : mockOperators
-  ).filter(
+  const filteredOperators = operators?.filter(
     (operator) =>
-      operator.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      operator.district.toLowerCase().includes(searchTerm.toLowerCase())
+      (
+        operator.firstname +
+        operator.lastname +
+        operator.middlename +
+        operator.fourthname
+      )
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      operator?.address?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -167,7 +147,7 @@ export default function AdminOperatorsPage() {
               <DialogHeader>
                 <DialogTitle>Register New Operator</DialogTitle>
               </DialogHeader>
-              <OperatorRegistrationForm />
+              <OperatorRegisterationForm />
             </DialogContent>
           </Dialog>
         </div>
@@ -352,7 +332,7 @@ export default function AdminOperatorsPage() {
 
         {/* Operators Tab */}
         <TabsContent value="operators" className="space-y-4">
-          {loading ? (
+          {isLoading ? (
             <div className="flex items-center justify-center h-32">
               <div className="text-muted-foreground">Loading operators...</div>
             </div>

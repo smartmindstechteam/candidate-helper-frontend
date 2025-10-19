@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FundManagementDataTable } from "@/components/funds/fund-management-data-table";
-import { FundManagementForm } from "@/components/forms/fund-management-form";
 import {
   Dialog,
   DialogContent,
@@ -50,9 +48,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { fundsApi } from "@/lib/api";
-import { FundsApiService } from "@/lib/funds-api";
-
 export default function FundsPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [timeRange, setTimeRange] = useState("6months");
@@ -62,30 +57,6 @@ export default function FundsPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Load transactions data on component mount
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const fundsApiService = new FundsApiService();
-        const response = await fundsApiService.getAllFunds();
-
-        if (response.success) {
-          setTransactions(response.data);
-        } else {
-          setError("Failed to load transactions data");
-        }
-      } catch (err) {
-        console.error("Failed to fetch transactions:", err);
-        setError("Failed to load transactions data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTransactions();
-  }, []);
 
   // Mock data for charts
   const monthlyData = [
@@ -149,9 +120,6 @@ export default function FundsPage() {
               <DialogHeader>
                 <DialogTitle>Add New Transaction</DialogTitle>
               </DialogHeader>
-              <FundManagementForm
-                onSuccess={() => setIsAddTransactionOpen(false)}
-              />
             </DialogContent>
           </Dialog>
         </div>
@@ -441,7 +409,7 @@ export default function FundsPage() {
               <div className="text-destructive">{error}</div>
             </div>
           ) : (
-            <FundManagementDataTable data={transactions} />
+            ""
           )}
         </TabsContent>
 

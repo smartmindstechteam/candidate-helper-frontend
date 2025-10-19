@@ -1,6 +1,7 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -73,8 +74,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ModeToggle } from "@/components/theme-toggle";
 import AnimatedBackground from "@/components/animated-background";
+import { useAuth } from "@/hooks/api/useAuth";
 
 export default function LandingPage() {
+  const { profile, authStatus } = useAuth();
+  const user = profile.data?.user;
+  const { isLoading, data: isAuthenticated } = authStatus;
+  const router = useRouter();
+
+  // Redirect authenticated users to their dashboard
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && user) {
+      const roleRedirects: Record<string, string> = {
+        admin: "/admin",
+        operator: "/operator",
+        supporter: "/supporter",
+      };
+
+      const redirectPath = roleRedirects[user.role || ""] || "/";
+      router.push(redirectPath);
+    }
+  }, [isAuthenticated, user, isLoading, router]);
   // Animation variants
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -111,59 +131,59 @@ export default function LandingPage() {
   const features = [
     {
       icon: <Users className="h-8 w-8 text-primary" />,
-      title: "Supporter Management",
+      title: "Smart Supporter Management",
       description:
-        "Register and manage supporters with ID verification and profile management",
+        "Build your voter base with automated ID verification, digital registration, and intelligent supporter segmentation to maximize campaign reach",
       link: "/supporter",
       color: "bg-primary/10 text-primary",
     },
     {
       icon: <Shield className="h-8 w-8 text-accent" />,
-      title: "Operator Management",
+      title: "Field Team Coordination",
       description:
-        "Track operators, assign tasks, and monitor GPS locations in real-time",
+        "Deploy and manage campaign operators with real-time GPS tracking, task assignment, and performance analytics to optimize ground operations",
       link: "/operator",
       color: "bg-accent/10 text-accent",
     },
     {
       icon: <MessageCircle className="h-8 w-8 text-secondary" />,
-      title: "Communication Center",
+      title: "Multi-Channel Messaging",
       description:
-        "Mass messaging via SMS, WhatsApp, and email with campaign templates",
+        "Reach voters instantly through SMS, WhatsApp, and email campaigns with personalized templates and automated follow-up sequences",
       link: "/communication",
       color: "bg-secondary/10 text-secondary",
     },
     {
       icon: <MapPin className="h-8 w-8 text-warning" />,
-      title: "Transport & Routing",
+      title: "Intelligent Route Planning",
       description:
-        "Interactive maps, polling stations, and optimized route planning",
+        "Optimize campaign routes with interactive maps, polling station locations, and AI-powered logistics to maximize voter contact efficiency",
       link: "/transport",
       color: "bg-warning/10 text-warning",
     },
     {
       icon: <Bot className="h-8 w-8 text-info" />,
-      title: "AI Chatbot",
+      title: "AI-Powered Voter Support",
       description:
-        "Intelligent assistant for voter support and fraud detection",
+        "Deploy intelligent chatbots for 24/7 voter assistance, fraud detection, and automated response systems to build trust and engagement",
       link: "/chatbot",
       color: "bg-info/10 text-info",
     },
     {
       icon: <DollarSign className="h-8 w-8 text-destructive" />,
-      title: "Funds & Resources",
+      title: "Campaign Finance Management",
       description:
-        "Manage campaign finances, distribute benefits, and track expenses",
+        "Track donations, manage expenses, and ensure compliance with transparent financial reporting and automated benefit distribution",
       link: "/funds",
       color: "bg-destructive/10 text-destructive",
     },
   ];
 
   const stats = [
+    { label: "Campaigns Won", value: "47", change: "+23%" },
     { label: "Active Supporters", value: "12,450", change: "+15%" },
-    { label: "Operators", value: "156", change: "+8%" },
-    { label: "Messages Sent", value: "45,230", change: "+22%" },
-    { label: "Routes Planned", value: "28", change: "+12%" },
+    { label: "Messages Delivered", value: "2.3M", change: "+45%" },
+    { label: "Voters Reached", value: "89,230", change: "+67%" },
   ];
 
   return (
@@ -234,15 +254,17 @@ export default function LandingPage() {
               {...fadeInUp}
               transition={{ delay: 0.4 }}
             >
-              Empowering Democratic Participation
+              Transform Somaliland's Democratic Future
             </motion.h2>
             <motion.p
-              className="text-lg sm:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed"
+              className="text-lg sm:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed"
               {...fadeInUp}
               transition={{ delay: 0.6 }}
             >
-              A comprehensive platform for managing campaigns, supporters, and
-              resources in Somaliland's democratic process.
+              The only all-in-one platform that empowers candidates, mobilizes
+              supporters, and streamlines campaign operations across Somaliland.
+              Join thousands of campaign teams already using our technology to
+              win elections and strengthen democracy.
             </motion.p>
             <motion.div
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center max-w-md sm:max-w-none mx-auto"
@@ -251,18 +273,18 @@ export default function LandingPage() {
             >
               <Button
                 size="lg"
-                className="btn-gradient w-full sm:w-auto"
+                className="btn-gradient w-full sm:w-auto text-lg px-8 py-6"
                 asChild
               >
-                <Link href="/auth">Get Started</Link>
+                <Link href="/auth">Start Your Campaign Today</Link>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto text-lg px-8 py-6"
                 asChild
               >
-                <Link href="#features">Learn More</Link>
+                <Link href="#features">See How It Works</Link>
               </Button>
             </motion.div>
           </div>
@@ -323,11 +345,13 @@ export default function LandingPage() {
               transition={{ delay: 0.2 }}
             >
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                Core Modules
+                Everything You Need to Win Elections
               </h2>
-              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-                Comprehensive tools for every aspect of campaign management and
-                voter engagement
+              <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto">
+                From supporter registration to real-time campaign analytics, our
+                integrated platform gives you the competitive edge to mobilize
+                voters, manage resources, and achieve electoral success across
+                Somaliland.
               </p>
             </motion.div>
 
@@ -554,6 +578,141 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+
+        {/* Testimonials Section */}
+        <motion.section
+          className="py-16 sm:py-20 px-4"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <div className="container mx-auto">
+            <motion.div
+              className="text-center mb-12 sm:mb-16"
+              {...fadeInUp}
+              transition={{ delay: 0.2 }}
+            >
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-4">
+                Trusted by Campaign Teams Across Somaliland
+              </h2>
+              <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto">
+                See how our platform has helped successful campaigns mobilize
+                voters and achieve electoral victory
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+              variants={staggerContainer}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+            >
+              <motion.div variants={fadeInUp}>
+                <Card className="card-glass hover:shadow-strong transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-1 mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                        />
+                      ))}
+                    </div>
+                    <p className="text-muted-foreground mb-4 italic">
+                      "This platform transformed our campaign. We increased
+                      voter registration by 340% and won the election with a 15%
+                      margin. The real-time analytics helped us make data-driven
+                      decisions every day."
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                        <User className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-foreground">
+                          Ahmed Hassan
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Mayor of Hargeisa
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div variants={fadeInUp}>
+                <Card className="card-glass hover:shadow-strong transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-1 mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                        />
+                      ))}
+                    </div>
+                    <p className="text-muted-foreground mb-4 italic">
+                      "The supporter management system is incredible. We
+                      registered 8,000 supporters in just 2 weeks and maintained
+                      95% data accuracy. The mobile app made field operations so
+                      much more efficient."
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center">
+                        <User className="h-5 w-5 text-accent" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-foreground">
+                          Fatima Ali
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Campaign Manager, Berbera
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div variants={fadeInUp}>
+                <Card className="card-glass hover:shadow-strong transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-1 mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                        />
+                      ))}
+                    </div>
+                    <p className="text-muted-foreground mb-4 italic">
+                      "The AI chatbot handled 2,000+ voter inquiries daily,
+                      freeing up our team to focus on strategy. The fraud
+                      detection system caught 15 suspicious activities that
+                      could have compromised our campaign."
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-secondary/20 flex items-center justify-center">
+                        <User className="h-5 w-5 text-secondary" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-foreground">
+                          Omar Jama
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Technology Director, Borama
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.section>
 
         {/* Technology Stack */}
         <section className="py-12 sm:py-20 px-4 bg-muted/30">

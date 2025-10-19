@@ -87,333 +87,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DataTable } from "@/components/ui/data-table";
+import { Operator } from "@/types/operator";
 
-export type Operator = {
-  id: number;
-  firstname: string;
-  middlename?: string;
-  lastname: string;
-  fourthname?: string;
-  birthdate?: string;
-  gender?: "male" | "female" | "other";
-  language?: string;
-  special_needs?: string;
-  email?: string;
-  address?: string;
-  latitude?: number;
-  longitude?: number;
-  role: "operator" | "supervisor" | "admin";
-  status: "pending" | "approved" | "rejected";
-  created_by?: number;
-  updated_by?: number;
-  created_at: string;
-  updated_at: string;
-  deleted_at?: string;
+// Using Operator type from API types
 
-  // Related data
-  phones?: {
-    id: number;
-    operator_id: number;
-    phone_number: string;
-    phone_type: "primary" | "secondary" | "emergency";
-    is_verified: boolean;
-  }[];
-  emergency_contacts?: {
-    id: number;
-    operator_id: number;
-    name: string;
-    relationship: string;
-    phone_number: string;
-    email?: string;
-    address?: string;
-  }[];
-  assigned_tasks?: {
-    id: number;
-    title: string;
-    description?: string;
-    status: "pending" | "in_progress" | "completed" | "cancelled";
-    priority: "low" | "medium" | "high";
-    due_date?: string;
-  }[];
-  assigned_supporters?: any[];
-  assigned_events?: {
-    id: number;
-    title: string;
-    description?: string;
-    event_date: string;
-    location?: string;
-    latitude?: number;
-    longitude?: number;
-    status: "planned" | "ongoing" | "completed" | "cancelled";
-  }[];
-  activity_logs?: {
-    id: number;
-    operator_id: number;
-    action_name: string;
-    entity_type: string;
-    entity_id?: number;
-    description?: string;
-    metadata?: Record<string, any>;
-    created_at: string;
-  }[];
-  funds?: {
-    id: number;
-    operator_id: number;
-    amount: number;
-    category: string;
-    source: string;
-    description?: string;
-    transaction_date: string;
-  }[];
-  allowed_actions?: string[];
-
-  // Additional fields for data table display
-  full_name?: string;
-  age?: number;
-  location_name?: string;
-  last_activity?: string;
-  task_count?: number;
-  supporter_count?: number;
-  event_count?: number;
-  total_funds?: number;
-};
-
-const mockOperators: Operator[] = [
-  {
-    id: 1,
-    firstname: "Ahmed",
-    middlename: "Hassan",
-    lastname: "Mohamed",
-    fourthname: "Ali",
-    birthdate: "1985-03-15",
-    gender: "male",
-    language: "Somali",
-    special_needs: undefined,
-    email: "ahmed.hassan@campaign.com",
-    address: "Hargeisa Central, Maroodi Jeex",
-    latitude: 9.5616,
-    longitude: 44.065,
-    role: "admin",
-    status: "approved",
-    created_by: 1,
-    updated_by: 1,
-    created_at: "2024-01-15T10:00:00Z",
-    updated_at: "2024-01-20T14:30:00Z",
-    phones: [
-      {
-        id: 1,
-        operator_id: 1,
-        phone_number: "+252 61 234 5678",
-        phone_type: "primary",
-        is_verified: true,
-      },
-      {
-        id: 2,
-        operator_id: 1,
-        phone_number: "+252 61 234 5679",
-        phone_type: "secondary",
-        is_verified: false,
-      },
-    ],
-    emergency_contacts: [
-      {
-        id: 1,
-        operator_id: 1,
-        name: "Fatima Hassan",
-        relationship: "Wife",
-        phone_number: "+252 61 234 5680",
-        email: "fatima.hassan@email.com",
-        address: "Hargeisa Central",
-      },
-    ],
-    assigned_tasks: [
-      {
-        id: 1,
-        title: "Campaign Strategy Review",
-        description: "Review and update campaign strategy for Q1",
-        status: "completed",
-        priority: "high",
-        due_date: "2024-01-25",
-      },
-    ],
-    assigned_supporters: [],
-    assigned_events: [
-      {
-        id: 1,
-        title: "Campaign Launch Event",
-        description: "Official campaign launch in Hargeisa",
-        event_date: "2024-02-01",
-        location: "Hargeisa Convention Center",
-        latitude: 9.5616,
-        longitude: 44.065,
-        status: "planned",
-      },
-    ],
-    activity_logs: [
-      {
-        id: 1,
-        operator_id: 1,
-        action_name: "create_supporter",
-        entity_type: "supporter",
-        entity_id: 101,
-        description: "Created new supporter record",
-        metadata: { supporter_name: "John Doe" },
-        created_at: "2024-01-20T14:30:00Z",
-      },
-    ],
-    funds: [
-      {
-        id: 1,
-        operator_id: 1,
-        amount: 5000,
-        category: "campaign_funds",
-        source: "donation",
-        description: "Initial campaign funding",
-        transaction_date: "2024-01-15",
-      },
-    ],
-    allowed_actions: [
-      "create_supporter",
-      "update_supporter",
-      "approve_supporter",
-      "assign_task",
-      "create_event",
-      "log_fund",
-      "view_map",
-      "generate_report",
-    ],
-    full_name: "Ahmed Hassan Mohamed Ali",
-    age: 39,
-    location_name: "Hargeisa Central, Maroodi Jeex",
-    last_activity: "2024-01-20T14:30:00Z",
-    task_count: 1,
-    supporter_count: 0,
-    event_count: 1,
-    total_funds: 5000,
-  },
-  {
-    id: 2,
-    firstname: "Fatima",
-    middlename: "Ali",
-    lastname: "Ahmed",
-    birthdate: "1990-07-22",
-    gender: "female",
-    language: "Somali",
-    special_needs: undefined,
-    email: "fatima.ali@campaign.com",
-    address: "Berbera, Sahil",
-    latitude: 10.4342,
-    longitude: 45.0143,
-    role: "supervisor",
-    status: "approved",
-    created_by: 1,
-    updated_by: 1,
-    created_at: "2024-01-10T09:00:00Z",
-    updated_at: "2024-01-19T16:45:00Z",
-    phones: [
-      {
-        id: 3,
-        operator_id: 2,
-        phone_number: "+252 61 234 5681",
-        phone_type: "primary",
-        is_verified: true,
-      },
-    ],
-    emergency_contacts: [
-      {
-        id: 2,
-        operator_id: 2,
-        name: "Omar Ahmed",
-        relationship: "Brother",
-        phone_number: "+252 61 234 5682",
-        address: "Berbera, Sahil",
-      },
-    ],
-    assigned_tasks: [
-      {
-        id: 2,
-        title: "Supporter Outreach",
-        description: "Contact and register new supporters",
-        status: "in_progress",
-        priority: "medium",
-        due_date: "2024-01-30",
-      },
-    ],
-    assigned_supporters: [],
-    assigned_events: [],
-    activity_logs: [
-      {
-        id: 2,
-        operator_id: 2,
-        action_name: "update_supporter",
-        entity_type: "supporter",
-        entity_id: 102,
-        description: "Updated supporter contact information",
-        created_at: "2024-01-19T16:45:00Z",
-      },
-    ],
-    funds: [],
-    allowed_actions: [
-      "create_supporter",
-      "update_supporter",
-      "assign_task",
-      "view_map",
-      "generate_report",
-    ],
-    full_name: "Fatima Ali Ahmed",
-    age: 34,
-    location_name: "Berbera, Sahil",
-    last_activity: "2024-01-19T16:45:00Z",
-    task_count: 1,
-    supporter_count: 0,
-    event_count: 0,
-    total_funds: 0,
-  },
-  {
-    id: 3,
-    firstname: "Omar",
-    middlename: "Mohamed",
-    lastname: "Hassan",
-    birthdate: "1995-11-08",
-    gender: "male",
-    language: "Somali",
-    special_needs: undefined,
-    email: "omar.mohamed@campaign.com",
-    address: "Burao, Togdheer",
-    latitude: 9.5221,
-    longitude: 45.5336,
-    role: "operator",
-    status: "pending",
-    created_by: 1,
-    updated_by: 1,
-    created_at: "2024-01-18T11:30:00Z",
-    updated_at: "2024-01-18T11:30:00Z",
-    phones: [
-      {
-        id: 4,
-        operator_id: 3,
-        phone_number: "+252 61 234 5683",
-        phone_type: "primary",
-        is_verified: false,
-      },
-    ],
-    emergency_contacts: [],
-    assigned_tasks: [],
-    assigned_supporters: [],
-    assigned_events: [],
-    activity_logs: [],
-    funds: [],
-    allowed_actions: [],
-    full_name: "Omar Mohamed Hassan",
-    age: 29,
-    location_name: "Burao, Togdheer",
-    last_activity: "2024-01-18T11:30:00Z",
-    task_count: 0,
-    supporter_count: 0,
-    event_count: 0,
-    total_funds: 0,
-  },
-];
+// Removed mock data - will use API calls instead
 
 const getInitials = (name: string) => {
   return name
@@ -452,12 +130,10 @@ const getRoleColor = (role: Operator["role"]) => {
 
 const getGenderIcon = (gender: Operator["gender"]) => {
   switch (gender) {
-    case "male":
+    case "m":
       return <User className="h-4 w-4 text-blue-600" />;
-    case "female":
+    case "f":
       return <User className="h-4 w-4 text-pink-600" />;
-    case "other":
-      return <User className="h-4 w-4 text-purple-600" />;
     default:
       return <User className="h-4 w-4 text-gray-600" />;
   }
@@ -534,7 +210,7 @@ export const columns: ColumnDef<Operator>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="h-8 px-2 lg:px-3"
         >
-          Operator
+         Operator
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -559,7 +235,7 @@ export const columns: ColumnDef<Operator>[] = [
             </div>
             {operator.birthdate && (
               <div className="text-xs text-muted-foreground">
-                Age: {calculateAge(operator.birthdate)}
+                Age: {calculateAge(operator.birthdate.toString())}
               </div>
             )}
           </div>
@@ -603,9 +279,7 @@ export const columns: ColumnDef<Operator>[] = [
     header: "Contact",
     cell: ({ row }) => {
       const operator = row.original;
-      const primaryPhone = operator.phones?.find(
-        (p) => p.phone_type === "primary"
-      );
+      const primaryPhone = operator.phones?.find((p) => p.type === "primary");
       return (
         <div className="space-y-1">
           {operator.email && (
@@ -617,8 +291,8 @@ export const columns: ColumnDef<Operator>[] = [
           {primaryPhone && (
             <div className="flex items-center space-x-1 text-sm text-muted-foreground">
               <Phone className="h-3 w-3" />
-              <span>{formatPhoneNumber(primaryPhone.phone_number)}</span>
-              {primaryPhone.is_verified && (
+              <span>{formatPhoneNumber(primaryPhone.phone)}</span>
+              {primaryPhone.isPrimary && (
                 <CheckCircle className="h-3 w-3 text-green-500" />
               )}
             </div>
@@ -642,9 +316,7 @@ export const columns: ColumnDef<Operator>[] = [
         <div className="space-y-1">
           <div className="flex items-center space-x-1 text-sm">
             <MapPin className="h-3 w-3 text-muted-foreground" />
-            <span>
-              {operator.location_name || operator.address || "Not specified"}
-            </span>
+            <span>{operator.address || "Not specified"}</span>
           </div>
           {operator.latitude && operator.longitude && (
             <div className="text-xs text-muted-foreground">
@@ -693,15 +365,15 @@ export const columns: ColumnDef<Operator>[] = [
         <div className="space-y-1">
           <div className="flex items-center space-x-1 text-sm">
             <Activity className="h-3 w-3 text-muted-foreground" />
-            <span>{operator.task_count || 0} tasks</span>
+            <span>{operator?.tasks?.length || 0} tasks</span>
           </div>
           <div className="flex items-center space-x-1 text-sm text-muted-foreground">
             <Users className="h-3 w-3" />
-            <span>{operator.supporter_count || 0} supporters</span>
+            <span>{operator.supporters.length || 0} supporters</span>
           </div>
           <div className="flex items-center space-x-1 text-sm text-muted-foreground">
             <Calendar className="h-3 w-3" />
-            <span>{operator.event_count || 0} events</span>
+            <span>{operator.events.length || 0} events</span>
           </div>
         </div>
       );
@@ -712,7 +384,7 @@ export const columns: ColumnDef<Operator>[] = [
     header: "Funds",
     cell: ({ row }) => {
       const operator = row.original;
-      const totalFunds = operator.total_funds || 0;
+      const totalFunds = 0;
       return (
         <div className="flex items-center space-x-2">
           <DollarSign className="h-4 w-4 text-green-600" />
@@ -764,7 +436,7 @@ export const columns: ColumnDef<Operator>[] = [
     },
   },
   {
-    accessorKey: "created_at",
+    accessorKey: "createdAt",
     header: ({ column }) => {
       return (
         <Button
@@ -778,7 +450,7 @@ export const columns: ColumnDef<Operator>[] = [
       );
     },
     cell: ({ row }) => {
-      const date = new Date(row.getValue("created_at"));
+      const date = new Date(row.getValue("createdAt"));
       return (
         <div className="flex items-center space-x-1 text-sm">
           <Calendar className="h-3 w-3 text-muted-foreground" />
@@ -792,7 +464,10 @@ export const columns: ColumnDef<Operator>[] = [
     header: "Last Activity",
     cell: ({ row }) => {
       const operator = row.original;
-      const lastActivity = operator.last_activity || operator.updated_at;
+      const lastActivity =
+        operator.activityLogs.length > 0
+          ? operator.activityLogs[operator.activityLogs.length - 1]?.createdAt
+          : operator.updatedAt;
       const date = new Date(lastActivity);
       return (
         <div className="text-sm text-muted-foreground">
@@ -896,15 +571,22 @@ export const columns: ColumnDef<Operator>[] = [
 
 interface OperatorsDataTableProps {
   data?: Operator[];
+  loading?: boolean;
+  error?: string;
+  onRefresh?: () => void;
 }
 
 export function OperatorsDataTable({
-  data = mockOperators,
+  data = [],
+  loading = false,
+  error,
+  onRefresh,
 }: OperatorsDataTableProps) {
   const [selectedRows, setSelectedRows] = React.useState<number[]>([]);
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
   const [roleFilter, setRoleFilter] = React.useState<string>("all");
   const [genderFilter, setGenderFilter] = React.useState<string>("all");
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const filteredData = React.useMemo(() => {
     return data.filter((operator) => {
@@ -918,9 +600,47 @@ export function OperatorsDataTable({
     });
   }, [data, statusFilter, roleFilter, genderFilter]);
 
-  const handleBulkAction = (action: string) => {
-    console.log(`Bulk action: ${action} on ${selectedRows.length} operators`);
-    // Implement bulk actions here
+  const handleBulkAction = async (action: string) => {
+    if (selectedRows.length === 0) return;
+
+    setIsLoading(true);
+    try {
+      const operatorIds = selectedRows;
+
+      switch (action) {
+        case "approve":
+          // Note: This would need to be implemented in the operators API
+          console.log("Bulk approve operators:", operatorIds);
+          break;
+        case "reject":
+          // Note: This would need to be implemented in the operators API
+          console.log("Bulk reject operators:", operatorIds);
+          break;
+        case "export":
+          // Note: This would need to be implemented in the operators API
+          console.log("Export operators:", operatorIds);
+          break;
+        case "message":
+          // Note: This would need to be implemented in the operators API
+          console.log("Send message to operators:", operatorIds);
+          break;
+        case "delete":
+          // Note: This would need to be implemented in the operators API
+          console.log("Delete operators:", operatorIds);
+          break;
+        default:
+          console.log(
+            `Bulk action: ${action} on ${selectedRows.length} operators`
+          );
+      }
+
+      setSelectedRows([]);
+      onRefresh?.();
+    } catch (error) {
+      console.error("Bulk action failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getUniqueRoles = () => {
@@ -932,6 +652,48 @@ export function OperatorsDataTable({
       new Set(data.map((o) => o.gender).filter(Boolean))
     ).sort();
   };
+
+  // Show loading state
+  if (loading || isLoading) {
+    return (
+      <div className="w-full space-y-4">
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center py-8">
+              <div className="flex items-center space-x-2">
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                <span className="text-sm text-muted-foreground">
+                  Loading operators...
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="w-full space-y-4">
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center">
+                <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-2" />
+                <p className="text-sm text-destructive mb-4">{error}</p>
+                <Button variant="outline" onClick={onRefresh}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-4">
@@ -1099,7 +861,15 @@ export function OperatorsDataTable({
       {/* Enhanced Data Table */}
       <div className="w-full overflow-hidden">
         <div className="overflow-x-auto">
-          <DataTable columns={columns} data={filteredData} />
+          <DataTable
+            filteringField="full_name"
+            registering={{
+              link: "/admin/operators/register",
+              name: "Operators",
+            }}
+            columns={columns}
+            data={filteredData}
+          />
         </div>
       </div>
     </div>

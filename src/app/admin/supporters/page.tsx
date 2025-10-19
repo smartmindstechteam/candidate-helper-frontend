@@ -5,37 +5,11 @@ import { SupportersDataTable } from "@/components/supporters/supporters-data-tab
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Users, Filter, Download } from "lucide-react";
-import { supportersApi } from "@/lib/api";
+import { useSupporters } from "@/hooks/api/useSupporters";
 
 export default function SupportersPage() {
-  const [supporters, setSupporters] = React.useState<any[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-
-  // Load supporters data on component mount
-  React.useEffect(() => {
-    const fetchSupporters = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await supportersApi.getAll();
-
-        if (response.data) {
-          setSupporters(response.data);
-        } else {
-          setError("Failed to load supporters data");
-        }
-      } catch (err) {
-        console.error("Failed to fetch supporters:", err);
-        setError("Failed to load supporters data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSupporters();
-  }, []);
+  const { data, isLoading: loading, isError: error } = useSupporters();
+  const supporters = data?.supporters;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

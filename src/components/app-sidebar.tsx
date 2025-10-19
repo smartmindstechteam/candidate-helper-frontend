@@ -43,14 +43,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/api/useAuth";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  userType: "admin" | "operator" | "supporter";
+  userType?: "admin" | "operator" | "supporter";
 }
 
 export function AppSidebar({ userType, ...props }: AppSidebarProps) {
+  const { authStatus, logout } = useAuth();
+  const { data: userResponse } = authStatus;
+  const user = userResponse?.data.user;
+
+  // Determine user type from auth context if not provided
+  const currentUserType =
+    userType ||
+    (user?.role as "admin" | "operator" | "supporter") ||
+    "supporter";
   const getNavigationData = () => {
-    switch (userType) {
+    switch (currentUserType) {
       case "admin":
         return {
           title: "Candidate Helper",
@@ -194,20 +204,24 @@ export function AppSidebar({ userType, ...props }: AppSidebarProps) {
               <DropdownMenuTrigger asChild>
                 <Avatar className="cursor-pointer h-8 w-8">
                   <AvatarImage
-                    src={`/placeholder-${userType}.jpg`}
-                    alt={`${userType} Avatar`}
+                    src={`/placeholder-${currentUserType}.jpg`}
+                    alt={`${currentUserType} Avatar`}
                   />
                   <AvatarFallback>
-                    {userType === "admin"
+                    {user?.name
+                      ? user.name.substring(0, 2).toUpperCase()
+                      : currentUserType === "admin"
                       ? "AD"
-                      : userType === "operator"
+                      : currentUserType === "operator"
                       ? "OP"
                       : "SP"}
                   </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                  {user?.name || "My Account"}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -218,7 +232,9 @@ export function AppSidebar({ userType, ...props }: AppSidebarProps) {
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={async () => await logout.mutateAsync()}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
                 </DropdownMenuItem>
