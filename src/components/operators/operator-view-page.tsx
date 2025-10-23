@@ -9,7 +9,7 @@ import {
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Edit, X, Save } from "lucide-react";
+import { Edit, X, Save, Dot } from "lucide-react";
 
 // --- Hooks & types from your codebase ---
 import {
@@ -35,10 +35,10 @@ import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 import { SupporterPhoneType } from "@/types/supporter";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { SelectContent, SelectTrigger } from "@radix-ui/react-select";
+import { SelectContent, SelectTrigger, Value } from "@radix-ui/react-select";
 import { SelectField } from "../ui/selectField";
-import { object } from "zod";
-import { cn } from "@/lib/utils";
+import { capitalize, cn } from "@/lib/utils";
+import { languageEnum } from "@/lib/validations/supporter";
 
 // NOTE: If some of the UI components above don't exist in your codebase, swap them for your project's equivalents.
 export function FieldError({ message }: { message: string }) {
@@ -56,7 +56,7 @@ export function OperatorProfilePage({ operatorId }: { operatorId: string }) {
   );
 
   const { data, isLoading: isLoadingOperator } = useOperator(numericOperatorId);
-  const { mutate: updateOperator, isPending: isUpdating } =
+  const { mutateAsync: updateOperator, isPending: isUpdating } =
     useUpdateOperator(numericOperatorId);
   const { mutateAsync: approveOperator, isPending: isApproving } =
     useApproveOperator(numericOperatorId);
@@ -125,9 +125,9 @@ export function OperatorProfilePage({ operatorId }: { operatorId: string }) {
 
   // when region/district changes, reset dependent fields while editing
 
-  const onSubmit: SubmitHandler<EditOperatorInput> = (data) => {
+  const onSubmit: SubmitHandler<EditOperatorInput> = async (data) => {
     // Clean up undefined fields if needed
-    updateOperator({ ...data } as any);
+    await updateOperator({ ...data } as any);
     setIsEditing(false);
   };
 
@@ -141,14 +141,34 @@ export function OperatorProfilePage({ operatorId }: { operatorId: string }) {
 
   return (
     <Card className="w-full max-w-4xl mx-auto p-6">
-      <div className="flex items-start justify-between gap-4">
+      <div
+        className={cn(
+          "flex items-start justify-between gap-4 bg-gradient-to-br transition-all",
+          operator.status == OperatorStatus.APPROVED
+            ? "from-green-300 to-50% "
+            : "from-red-300 to-50%"
+        )}
+      >
         <div>
           <h2 className="text-2xl font-semibold">
-            {operator.firstname} {operator.middlename ?? ""} {operator.lastname}
+            {capitalize(operator.firstname) + " "}
+            {capitalize(operator.middlename) + " "}
+            {capitalize(operator.lastname) + " "}
+            {capitalize(operator.fourthname) + " "}
+            {}
           </h2>
           <p className="text-sm text-muted-foreground">
-            Role: <span className="font-medium">{operator.role}</span> • Status:{" "}
+            Role: <span className="font-medium">{operator.role}</span> Status:{" "}
             <span className="font-medium">{operator.status}</span>
+            <Dot
+              size={34}
+              className={cn(
+                "animate-pulse inline-block",
+                operator.status == OperatorStatus.APPROVED
+                  ? "text-green-700"
+                  : "text-red-700"
+              )}
+            />
           </p>
         </div>
 
@@ -385,26 +405,17 @@ export function OperatorProfilePage({ operatorId }: { operatorId: string }) {
                 control={control}
                 name="role"
                 render={({ field }) => (
-                  <Select {...field} disabled={!isEditing}>
-                    {Object.values(OperatorRole).map((r) => (
-                      <option key={r} value={r}>
-                        {r}
-                      </option>
-                    ))}
-                  </Select>
+                  <SelectField
+                    {...field}
+                    control={control}
+                    options={Object.values(OperatorRole).map((o) => {
+                      return { label: o.toString(), value: o };
+                    })}
+                    name="role"
+                    label="Role"
+                    placeholder={operator.role as OperatorRole}
+                  />
                 )}
-              />
-            </div>
-
-            <div>
-              <SelectField
-                name={"status"}
-                control={control}
-                label={"status"}
-                options={Object.values(OperatorStatus).map((m) => {
-                  return { label: m.toLowerCase(), value: m };
-                })}
-                placeholder="pending"
               />
             </div>
           </div>
@@ -435,13 +446,19 @@ export function OperatorProfilePage({ operatorId }: { operatorId: string }) {
                 <div className="col-span-4">
                   <Label>Type</Label>
                   <Controller
+                    disabled={!isEditing}
                     control={control}
                     name={`phones.${idx}.type` as any}
                     render={({ field }) => (
-                      <Select {...field} disabled={!isEditing}>
-                        <option value="primary">Primary</option>
-                        <option value="secondary">Secondary</option>
-                      </Select>
+                      <SelectField
+                        name={`phones.${idx}.type` as any}
+                        options={Object.values(SupporterPhoneType).map((t) => {
+                          return { label: t.toString(), value: t };
+                        })}
+                        label=""
+                        control={control}
+                        placeholder={operator.phones[idx].type || ""}
+                      />
                     )}
                   />
                 </div>
