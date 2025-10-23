@@ -77,6 +77,7 @@ import { ModeToggle } from "@/components/theme-toggle";
 import { OperatorsDataTable } from "@/components/operators/operators-data-table";
 import { SupportersDataTable } from "@/components/supporters/supporters-data-table";
 import { useSupporter, useSupporters } from "@/hooks/api/useSupporters";
+import SupporterAnalytics from "@/components/supporters/analytics";
 
 export default function AdminDashboard() {
   const { data, isLoading, error } = useSupporters();
@@ -567,11 +568,7 @@ export default function AdminDashboard() {
               </p>
             </CardHeader>
             <CardContent>
-              <SupportersDataTable
-                loading={isLoading}
-                error={error?.message}
-                data={data?.supporters}
-              />
+              <SupporterAnalytics />
             </CardContent>
           </Card>
         </TabsContent>

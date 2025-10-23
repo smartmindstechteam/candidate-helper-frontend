@@ -322,20 +322,19 @@ export function OperatorProfilePage({ operatorId }: { operatorId: string }) {
             {/* gender */}
             <div>
               <Label>Gender</Label>
+
               {isEditing ? (
-                <Controller
+                <SelectField
                   control={control}
                   name="gender"
-                  render={({ field }) => (
-                    <Select {...field} disabled={!isEditing}>
-                      <option value="M">Male</option>
-                      <option value="F">Female</option>
-                      <option value="O">Other</option>
-                    </Select>
-                  )}
+                  label=""
+                  placeholder={operator.gender}
+                  options={Object.values(Gender).map((g) => {
+                    return { label: g == "m" ? "male" : "female", value: g };
+                  })}
                 />
               ) : (
-                <Label>{operator.gender}</Label>
+                <Label>{operator.gender == "m" ? "male" : "female"}</Label>
               )}
             </div>
 
@@ -369,17 +368,18 @@ export function OperatorProfilePage({ operatorId }: { operatorId: string }) {
             {/* language */}
             <div>
               <Label>Language</Label>
-              <Controller
-                control={control}
-                name="language"
-                render={({ field }) => (
-                  <Select {...field} disabled={!isEditing}>
-                    <option value="somali">Somali</option>
-                    <option value="english">English</option>
-                    <option value="arabic">Arabic</option>
-                  </Select>
-                )}
-              />
+              {!isEditing && <div>{operator.language} </div>}
+              {isEditing && (
+                <SelectField
+                  options={Object.values(languageEnum.enum).map((l) => {
+                    return { label: l.toString(), value: l };
+                  })}
+                  control={control}
+                  label=""
+                  name="language"
+                  placeholder="somali"
+                />
+              )}
             </div>
 
             {/* special needs */}
@@ -401,28 +401,32 @@ export function OperatorProfilePage({ operatorId }: { operatorId: string }) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Role</Label>
-              <Controller
-                control={control}
-                name="role"
-                render={({ field }) => (
-                  <SelectField
-                    {...field}
-                    control={control}
-                    options={Object.values(OperatorRole).map((o) => {
-                      return { label: o.toString(), value: o };
-                    })}
-                    name="role"
-                    label="Role"
-                    placeholder={operator.role as OperatorRole}
-                  />
-                )}
-              />
+              {!isEditing && <div>{operator.role}</div>}
+              {isEditing && (
+                <Controller
+                  control={control}
+                  name="role"
+                  render={({ field }) => (
+                    <SelectField
+                      {...field}
+                      control={control}
+                      options={Object.values(OperatorRole).map((o) => {
+                        return { label: o.toString(), value: o };
+                      })}
+                      name="role"
+                      label="Role"
+                      placeholder={operator.role as OperatorRole}
+                    />
+                  )}
+                />
+              )}
             </div>
           </div>
         </Card>
 
         <Card className="p-4">
           <h3 className="text-lg font-medium mb-4">Phones</h3>
+
           <div className="space-y-3">
             {phoneFields.length === 0 && !isEditing && (
               <p className="text-sm text-muted-foreground">
@@ -430,64 +434,102 @@ export function OperatorProfilePage({ operatorId }: { operatorId: string }) {
               </p>
             )}
 
-            {phoneFields.map((p, idx) => (
-              <div key={p.id} className="grid grid-cols-12 gap-2 items-center">
-                <div className="col-span-5">
-                  <Label>Number</Label>
-                  <Controller
-                    control={control}
-                    name={`phones.${idx}.phone` as any}
-                    render={({ field }) => (
-                      <Input {...field} disabled={!isEditing} />
-                    )}
-                  />
-                </div>
+            {phoneFields.map((field, index) => (
+              <div key={field.id} className="flex items-center gap-2 mt-2">
+                {/* Phone Type */}
+                <Controller
+                  name={`phones.${index}.type`}
+                  control={control}
+                  render={({ field }) => (
+                    <select
+                      {...field}
+                      disabled={!isEditing}
+                      className={cn(
+                        "h-9 rounded-md border border-input bg-background px-3 py-1 text-sm w-32",
+                        !isEditing && "opacity-70 cursor-not-allowed"
+                      )}
+                    >
+                      <option value="primary">Primary</option>
+                      <option value="secondary">Secondary</option>
+                    </select>
+                  )}
+                />
 
-                <div className="col-span-4">
-                  <Label>Type</Label>
-                  <Controller
-                    disabled={!isEditing}
-                    control={control}
-                    name={`phones.${idx}.type` as any}
-                    render={({ field }) => (
-                      <SelectField
-                        name={`phones.${idx}.type` as any}
-                        options={Object.values(SupporterPhoneType).map((t) => {
-                          return { label: t.toString(), value: t };
-                        })}
-                        label=""
-                        control={control}
-                        placeholder={operator.phones[idx].type || ""}
-                      />
-                    )}
-                  />
-                </div>
+                {/* Phone Number */}
+                <Controller
+                  name={`phones.${index}.phone`}
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      disabled={!isEditing}
+                      placeholder="e.g. 634000000"
+                      className="flex-1"
+                    />
+                  )}
+                />
 
-                <div className="col-span-3 flex items-end gap-2">
-                  {isEditing ? (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => remove(idx)}
-                      >
-                        Remove
-                      </Button>
-                    </>
-                  ) : null}
-                </div>
+                {/* Primary Setter */}
+                {isEditing && (
+                  <Button
+                    type="button"
+                    variant={
+                      (phoneFields[index] as any).type === "primary"
+                        ? "default"
+                        : "outline"
+                    }
+                    size="sm"
+                    onClick={() =>
+                      form.setValue(
+                        "phones",
+                        phoneFields.map((p, i) => ({
+                          phone: (p as any).phone ?? "",
+                          type:
+                            i === index
+                              ? "primary"
+                              : (p as any).type || "secondary",
+                        }))
+                      )
+                    }
+                  >
+                    {(phoneFields[index] as any).type === "primary"
+                      ? "Primary"
+                      : "Set"}
+                  </Button>
+                )}
+
+                {/* Remove Button */}
+                {isEditing && phoneFields.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => remove(index)}
+                  >
+                    <X size={16} />
+                  </Button>
+                )}
               </div>
             ))}
 
-            {isEditing && (
-              <div>
-                <Button
-                  size="sm"
-                  onClick={() => append({ phone: "", type: "primary" })}
-                >
-                  Add phone
-                </Button>
-              </div>
+            {/* Validation Error */}
+            {errors.phones && (
+              <p className="text-sm text-destructive mt-1">
+                {errors.phones.message || (errors.phones as any).root?.message}
+              </p>
+            )}
+
+            {/* Add Phone Button */}
+            {isEditing && phoneFields.length < 2 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-2"
+                onClick={() => append({ type: "secondary", phone: "" })}
+              >
+                + Add Phone
+              </Button>
             )}
           </div>
         </Card>
